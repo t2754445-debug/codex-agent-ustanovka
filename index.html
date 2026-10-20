@@ -2,271 +2,238 @@
 <html lang="ru">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
-<title>Агент в Codex: установка по шагам</title>
-<meta name="description" content="Пошагово: куда положить файлы, что нажать в Codex, как работает журнал и откат.">
+<title>Агент в Codex: установка</title>
+<meta name="description" content="Тренажёр установки: курсор показывает, куда нажать. 12 шагов, 15 минут.">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Агент в Codex: установка по шагам">
-<meta property="og:description" content="Правила больше не теряются при сжатии чата. Каждое действие агента в журнале, откат только у тебя.">
+<meta property="og:title" content="Агент в Codex: установка за 15 минут">
+<meta property="og:description" content="Курсор сам показывает, куда нажать. Правила не теряются, журнал с откатом, данные не уходят в обучение.">
 <meta property="og:image" content="https://t2754445-debug.github.io/codex-agent-ustanovka/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#151311">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700;800;900&family=Dela+Gothic+One&display=swap" rel="stylesheet">
 <style>
 :root{
-  --paper:#eef1f4; --sheet:#ffffff; --ink:#15233b; --ink-2:#4a5870; --grid:#d5dbe3;
-  --done:#d9ead3; --done-ink:#2d6a3e; --mark:#ffef5c; --skip:#f4cccc; --skip-ink:#9b2c2c;
-  --codex:#1b1c1e; --codex-2:#2a2b2e; --codex-ink:#e6e6e6;
-}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --paper:#11161e; --sheet:#18202b; --ink:#e4e9f0; --ink-2:#9aa7b8; --grid:#2a3442;
-  --done:#203a28; --done-ink:#9fd3ad; --skip:#3f2326; --skip-ink:#f0a5a5;
-}}
-:root[data-theme="dark"]{
-  --paper:#11161e; --sheet:#18202b; --ink:#e4e9f0; --ink-2:#9aa7b8; --grid:#2a3442;
-  --done:#203a28; --done-ink:#9fd3ad; --skip:#3f2326; --skip-ink:#f0a5a5;
+  --paper:#151311; --sheet:#1f1c19; --ink:#efe6d6; --ink-2:#a99f91; --grid:#3b352f; --blood:#812022; --blood-2:#b3343a;
+  --green:#d9ead3; --green-ink:#2d6a3e; --red:#f4cccc; --red-ink:#a33a3a; --mark:#ffef5c; --mark-2:#e6c900;
+  --cx:#1b1c1e; --cx-2:#232427; --cx-3:#2c2d31; --cx-line:#3a3b40; --cx-ink:#e8e8e8; --cx-mute:#9b9ca1;
+  --ease:cubic-bezier(.22,1,.36,1);
 }
 *{box-sizing:border-box}
-html{scroll-behavior:smooth}
-@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
-body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.55 "Golos Text",system-ui,sans-serif}
-a{color:inherit}
-.wrap{max-width:1080px;margin:0 auto;padding:0 16px}
-
-/* hero */
-header{padding:56px 0 40px}
-h1{font-size:clamp(34px,6vw,58px);line-height:1.05;font-weight:800;letter-spacing:-.02em;margin:0 0 18px;max-width:14ch}
-.lead{font-size:19px;color:var(--ink-2);max-width:60ch;margin:0 0 30px}
-.legend{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border:1px solid var(--grid);background:var(--sheet);max-width:760px}
-.legend div{padding:14px 16px;border-left:1px solid var(--grid);font-size:15px}
-.legend div:first-child{border-left:0}
-.legend b{display:block;font-size:16px;margin-bottom:2px}
-.legend .g{background:var(--done)} .legend .r{background:var(--skip)} .legend .y{background:var(--mark);color:#15233b}
-.legend .y b,.legend .y{color:#15233b}
-.why{margin-top:28px;max-width:62ch;font-size:16px;color:var(--ink-2)}
-.why strong{color:var(--ink)}
-
-/* progress */
-.bar{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--paper) 92%,transparent);backdrop-filter:blur(6px);border-bottom:1px solid var(--grid)}
-.bar .wrap{display:flex;align-items:center;gap:14px;padding-top:10px;padding-bottom:10px}
-.cells{display:flex;gap:3px;flex:1}
-.cells a{flex:1;height:14px;border:1px solid var(--grid);background:var(--sheet);display:block}
-.cells a.done{background:var(--done);border-color:var(--done-ink)}
-.cells a.now{background:var(--mark);border-color:#c9b400}
-.count{font-weight:600;font-size:15px;white-space:nowrap}
-
-/* steps as sheet rows */
-ol.steps{list-style:none;margin:28px 0 0;padding:0;border-top:1px solid var(--grid)}
-.step{display:grid;grid-template-columns:64px 1fr;border-bottom:1px solid var(--grid);background:var(--sheet);scroll-margin-top:60px}
-.num{border-right:1px solid var(--grid);display:flex;justify-content:center;padding-top:22px;font-weight:700;font-size:18px;color:var(--ink-2);transition:background-color var(--t,.2s) ease}
-.step.done .num{background:var(--done);color:var(--done-ink)}
-.step.now .num{background:var(--mark);color:#15233b}
-.body{padding:20px 22px 22px;min-width:0}
-.step h2{font-size:22px;line-height:1.25;margin:0 0 8px;font-weight:700}
-.step.done h2{color:var(--done-ink)}
-.step p{margin:0 0 12px;max-width:66ch}
-.step ul{margin:0 0 12px;padding-left:20px;max-width:66ch}
-.step li{margin-bottom:4px}
-.opt{font-size:14px;font-weight:600;color:var(--ink-2);margin-left:8px}
-.fn{font-weight:600;background:color-mix(in srgb,var(--mark) 45%,transparent);padding:0 4px;border-radius:3px;white-space:nowrap}
-.step.done .detail{display:none}
-.step.done .done-note{display:block}
-.done-note{display:none;color:var(--done-ink);font-size:15px;margin:0}
-
-.copy{position:relative;margin:10px 0 14px;max-width:760px}
-.copy pre{margin:0;background:var(--codex);color:var(--codex-ink);padding:14px 16px;padding-right:118px;font:14px/1.5 Consolas,"Cascadia Mono",monospace;white-space:pre-wrap;word-break:break-word;border-radius:6px}
-.copy button{position:absolute;top:8px;right:8px}
-button{font:inherit;font-size:14px;font-weight:600;border:1px solid var(--grid);background:var(--sheet);color:var(--ink);padding:7px 12px;border-radius:5px;cursor:pointer}
-.copy button{background:#34363a;color:#fff;border-color:#4a4c50}
+html,body{height:100%}
+body{margin:0;background:radial-gradient(1200px 600px at 85% -10%,rgba(129,32,34,.28),transparent 60%),radial-gradient(900px 500px at -10% 110%,rgba(129,32,34,.18),transparent 60%),var(--paper);color:var(--ink);font:17px/1.5 "Golos Text",system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+button{font:inherit;cursor:pointer}
 button:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid #3b6fd8;outline-offset:2px}
-.mark-done{margin-top:6px;background:var(--done);border-color:var(--done-ink);color:var(--done-ink)}
-.step.done .mark-done{background:var(--sheet);color:var(--ink-2);border-color:var(--grid)}
 
-figure{margin:12px 0 16px;max-width:760px}
-figure svg,figure img{display:block;width:100%;height:auto;border:1px solid var(--grid);border-radius:6px}
-figcaption{font-size:14px;color:var(--ink-2);margin-top:6px}
+/* ---------- верх: прогресс-столбец таблицы ---------- */
+.top{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--paper) 90%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--grid)}
+.top-in{max-width:1320px;margin:0 auto;padding:10px 20px;display:flex;align-items:center;gap:14px}
+.brand{font-weight:800;font-size:15px;white-space:nowrap}
+.cells{display:flex;gap:4px;flex:1;min-width:0}
+.cell{flex:1;height:22px;border:1.5px solid var(--grid);background:var(--sheet);font-size:11px;font-weight:700;color:var(--ink-2);display:flex;align-items:center;justify-content:center;padding:0;position:relative;overflow:hidden;border-radius:3px}
+.cell::before{content:"";position:absolute;inset:0;background:var(--green);transform:scaleX(0);transform-origin:left;transition:transform .6s var(--ease)}
+.cell span{position:relative}
+.cell.done::before{transform:scaleX(1)}
+.cell.done{border-color:var(--green-ink);color:var(--green-ink)}
+.cell.now{background:var(--mark);border-color:var(--mark-2);color:#151311}
+.count{font-weight:700;font-size:14px;white-space:nowrap;min-width:64px;text-align:right}
 
-details{border:1px solid var(--grid);border-radius:6px;margin:8px 0;max-width:760px;background:var(--paper)}
-summary{cursor:pointer;padding:10px 14px;font-weight:600}
-details > div{padding:0 14px 12px;font-size:15px}
-.files{display:grid;grid-template-columns:minmax(150px,auto) 1fr;border:1px solid var(--grid);max-width:760px;font-size:15px}
-.files div{padding:8px 12px;border-top:1px solid var(--grid)}
-.files div:nth-child(-n+2){border-top:0}
-.files div:nth-child(odd){font-weight:600;background:var(--paper);border-right:1px solid var(--grid);word-break:break-all}
-.warn{border-left:4px solid var(--skip-ink);background:var(--skip);padding:10px 14px;max-width:66ch;margin:10px 0 14px;font-size:15px;color:var(--ink)}
+/* ---------- сцена ---------- */
+.app{max-width:1320px;margin:0 auto;padding:28px 20px 120px;display:grid;grid-template-columns:minmax(330px,430px) 1fr;gap:40px;align-items:start}
+.panel{position:relative}
+.panel-in{transition:opacity .35s var(--ease),transform .5s var(--ease)}
+.panel-in.out{opacity:0;transform:translateY(14px)}
+.kicker{display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:14px;color:var(--ink-2);margin-bottom:10px}
+.kicker b{display:inline-grid;place-items:center;min-width:34px;height:28px;padding:0 6px;background:var(--mark);color:#151311;border:1.5px solid var(--mark-2);border-radius:4px;font-size:15px}
+h1,h2{margin:0 0 14px;font-family:"Dela Gothic One","Golos Text",sans-serif;font-weight:400;letter-spacing:-.01em;line-height:1.08}
+h1{font-size:clamp(34px,3.4vw,50px)}
+h2{font-size:clamp(28px,3.2vw,40px)}
+.panel p{margin:0 0 12px;max-width:52ch}
+.panel ul,.panel ol{margin:0 0 12px;padding-left:20px;max-width:52ch}
+.panel li{margin-bottom:5px}
+.mute{color:var(--ink-2);font-size:15px}
+.path{font-weight:700;background:var(--mark);color:#151311;padding:1px 6px;border-radius:4px;white-space:nowrap}
+.en{color:var(--ink-2);font-weight:500}
+.note{border-left:4px solid var(--blood-2);background:rgba(129,32,34,.28);padding:10px 14px;border-radius:0 6px 6px 0;font-size:15px;margin:12px 0;max-width:52ch}
+.ok{border-left:4px solid #6fbf87;background:rgba(45,106,62,.25);padding:10px 14px;border-radius:0 6px 6px 0;font-size:15px;margin:12px 0;max-width:52ch}
+.copy{display:flex;align-items:stretch;margin:10px 0 14px;max-width:52ch;border:1.5px solid var(--grid);border-radius:8px;overflow:hidden;background:var(--sheet)}
+.copy code{flex:1;padding:10px 12px;font:600 15px/1.4 Consolas,"Cascadia Mono",monospace;overflow-wrap:anywhere}
+.copy button{border:0;border-left:1.5px solid var(--blood);background:var(--blood);color:#fff;font-weight:700;font-size:14px;padding:0 14px;min-width:120px}
+.copy button.done{background:var(--green-ink)}
+details{border:1.5px solid var(--grid);border-radius:8px;margin:10px 0;max-width:52ch;background:var(--sheet)}
+summary{padding:10px 14px;font-weight:700;cursor:pointer}
+details>div{padding:0 14px 10px;font-size:15px}
 
-footer{padding:40px 0 60px;color:var(--ink-2);font-size:15px}
-.reset{margin-left:8px}
+.stage-col{position:sticky;top:76px}
+.stage-wrap{position:relative;width:100%;border-radius:16px;background:#0f1012;box-shadow:0 40px 80px -30px rgba(0,0,0,.8),0 0 0 1px #3b352f,0 0 0 6px rgba(129,32,34,.25);overflow:hidden}
+.stage{position:absolute;left:0;top:0;width:800px;height:500px;transform-origin:0 0;overflow:hidden;font:15px/1.4 "Segoe UI","Golos Text",sans-serif;color:var(--cx-ink)}
+.replay{margin-top:10px;background:transparent;border:0;color:var(--ink-2);font-weight:600;font-size:14px;padding:6px 0}
+.replay:hover{color:var(--ink)}
 
-@media (max-width:640px){
+/* курсор */
+.cursor{position:absolute;left:0;top:0;width:26px;height:26px;z-index:50;pointer-events:none;transform:translate(700px,440px);transition:transform .9s var(--ease);filter:drop-shadow(0 3px 4px rgba(0,0,0,.45))}
+.cursor svg{display:block}
+.ripple{position:absolute;z-index:49;width:16px;height:16px;margin:-8px 0 0 -8px;border-radius:50%;border:3px solid var(--mark);pointer-events:none;animation:rip .6s var(--ease) forwards}
+@keyframes rip{from{transform:scale(.3);opacity:1}to{transform:scale(3.4);opacity:0}}
+.hl{outline:3px solid var(--mark)!important;outline-offset:2px;border-radius:6px;animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{outline-color:var(--mark)}50%{outline-color:rgba(255,239,92,.35)}}
+.hide{display:none!important}
+.fade-in{animation:fin .35s var(--ease)}
+@keyframes fin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* общие детали макетов */
+.win{position:absolute;inset:0;background:var(--cx)}
+.titlebar{height:34px;background:#141517;display:flex;align-items:center;gap:8px;padding:0 12px;font-size:13px;color:var(--cx-mute);border-bottom:1px solid var(--cx-line)}
+.titlebar i{width:11px;height:11px;border-radius:50%;background:#3a3b40;display:block}
+.light{background:#fafafa;color:#1f1f1f}
+.light .titlebar{background:#f0f0f0;color:#555;border-color:#ddd}
+.side{position:absolute;left:0;top:34px;bottom:0;width:210px;background:#202124;border-right:1px solid var(--cx-line);padding:14px 10px}
+.side .it{padding:8px 10px;border-radius:7px;margin-bottom:3px;color:var(--cx-ink)}
+.side .it.m{color:var(--cx-mute)}
+.side .it.on{background:var(--cx-3)}
+.main{position:absolute;left:210px;right:0;top:34px;bottom:0;padding:22px}
+.btn{display:inline-block;padding:8px 16px;border-radius:8px;background:var(--cx-3);border:1px solid var(--cx-line);color:var(--cx-ink);font-weight:600}
+.btn.pri{background:#e8e8e8;color:#1b1c1e}
+.light .btn{background:#fff;border-color:#ccc;color:#1f1f1f}
+.light .btn.pri{background:#0067c0;border-color:#0067c0;color:#fff}
+.menu{position:absolute;background:var(--cx-3);border:1px solid var(--cx-line);border-radius:10px;padding:6px;min-width:200px;box-shadow:0 16px 30px rgba(0,0,0,.45);z-index:5}
+.light .menu{background:#fff;border-color:#ddd;color:#1f1f1f;box-shadow:0 10px 24px rgba(0,0,0,.18)}
+.menu div{padding:7px 12px;border-radius:6px}
+.dlg{position:absolute;background:var(--cx-2);border:1px solid var(--cx-line);border-radius:12px;padding:20px 22px;box-shadow:0 30px 60px rgba(0,0,0,.5);z-index:6}
+.light .dlg{background:#fff;border-color:#ddd;color:#1f1f1f}
+.field{border:1px solid var(--cx-line);background:#151618;border-radius:7px;padding:8px 10px;min-height:36px;font-family:Consolas,monospace;font-size:14px}
+.light .field{background:#fff;border-color:#bbb;color:#111}
+.tg{position:relative;width:46px;height:26px;border-radius:13px;background:#10a37f;transition:background .3s;flex:none}
+.tg::after{content:"";position:absolute;top:3px;left:23px;width:20px;height:20px;border-radius:50%;background:#fff;transition:left .3s var(--ease)}
+.tg.off{background:#5a5b60}
+.tg.off::after{left:3px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 0;border-bottom:1px solid var(--cx-line)}
+.row small{display:block;color:var(--cx-mute);font-size:12.5px;margin-top:2px}
+.badge{display:inline-block;font-size:12px;font-weight:700;padding:2px 8px;border-radius:5px;background:#10a37f;color:#fff}
+.badge.off{background:#5a5b60}
+
+/* чат */
+.chat{position:absolute;left:210px;right:0;top:34px;bottom:74px;padding:18px 26px;overflow:hidden;display:flex;flex-direction:column;gap:10px;justify-content:flex-end}
+.bub{max-width:76%;padding:10px 14px;border-radius:14px;font-size:14px;line-height:1.45}
+.bub.u{align-self:flex-end;background:var(--cx-3);border:1px solid var(--cx-line)}
+.bub.a{align-self:flex-start;background:transparent;padding-left:0}
+.bub.a .l{display:block}
+.y{color:#9fd3ad}.r{color:#f0a5a5}.w{color:var(--mark)}
+.composer{position:absolute;left:226px;right:16px;bottom:14px;height:50px;border-radius:14px;background:var(--cx-3);border:1px solid var(--cx-line);display:flex;align-items:center;padding:0 14px;gap:14px;color:var(--cx-mute);font-size:14px}
+.composer .full{color:#e8a23a}
+.composer .model{margin-left:auto;padding:6px 10px;border-radius:8px;color:var(--cx-ink)}
+.composer .send{width:30px;height:30px;border-radius:50%;background:#e8e8e8;display:grid;place-items:center;color:#1b1c1e;font-weight:900}
+
+/* консоль */
+.con{position:absolute;inset:34px 0 0 0;background:#0c0c0c;padding:16px 18px;font:15px/1.6 Consolas,"Cascadia Mono",monospace;color:#d6d6d6;white-space:pre-wrap}
+.con .p{color:#9b9ca1}
+
+/* таблица */
+.sheet{position:absolute;background:#fff;color:#1f1f1f;border:1px solid #c9ced6;font-size:14px;border-radius:4px;overflow:hidden}
+.sheet .rw{display:grid;grid-template-columns:62px 1fr 120px;border-top:1px solid #dde1e7}
+.sheet .rw:first-child{border-top:0;background:#f1f3f6;font-weight:700;color:#5f6b7a;font-size:12.5px}
+.sheet .rw div{padding:9px 10px;border-left:1px solid #dde1e7;transition:background-color .5s}
+.sheet .rw div:first-child{border-left:0;font-weight:700;text-align:center}
+
+/* проводник */
+.files{position:absolute;left:210px;right:0;top:34px;bottom:0;padding:18px 22px;display:grid;grid-template-columns:repeat(4,1fr);align-content:start;gap:12px}
+.light .side{background:#f3f3f3;border-color:#ddd}
+.light .side .it{color:#1f1f1f}
+.light .side .it.on{background:#dfe9f5}
+.fi{display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 4px;border-radius:6px;font-size:13px;text-align:center;color:#1f1f1f}
+.fi .ic{width:44px;height:52px;border-radius:4px;display:grid;place-items:center;font-weight:800;font-size:12px;color:#fff}
+.ic.zip{background:#d9a514}.ic.dir{background:#e8b84a;border-radius:4px 4px 6px 6px;height:40px;margin-top:6px}.ic.txt{background:#6b7f99}.ic.cmd{background:#2e3640}.ic.md{background:#3b6fd8}
+
+/* финал */
+.final-col{position:absolute;inset:0;background:var(--paper);display:flex;align-items:center;justify-content:center}
+
+/* управление */
+.ctrl{position:fixed;left:0;right:0;bottom:0;z-index:30;background:color-mix(in srgb,var(--paper) 88%,transparent);backdrop-filter:blur(10px);border-top:1px solid var(--grid);padding:12px 20px calc(12px + env(safe-area-inset-bottom))}
+.ctrl-in{max-width:1320px;margin:0 auto;display:flex;gap:12px;align-items:center}
+.ctrl .hint{color:var(--ink-2);font-size:14px;margin-right:auto}
+.nb{border:1.5px solid var(--grid);background:var(--sheet);color:var(--ink);font-weight:700;font-size:16px;padding:12px 22px;border-radius:10px;min-height:50px}
+.nb.go{background:var(--blood);border-color:var(--blood-2);color:#fff;min-width:220px;position:relative;overflow:hidden}
+.nb.go.pulse{animation:gopulse 1.6s ease-in-out infinite}
+@keyframes gopulse{0%,100%{box-shadow:0 0 0 0 rgba(255,239,92,.0)}50%{box-shadow:0 0 0 8px rgba(255,239,92,.45)}}
+.nb.go::after{content:"";position:absolute;inset:0;background:var(--green-ink);transform:scaleX(0);transform-origin:left;transition:transform .45s var(--ease)}
+.nb.go.flash::after{transform:scaleX(1)}
+.nb.go span{position:relative;z-index:1}
+.nb:disabled{opacity:.35;cursor:default}
+
+@media (max-width:900px){
   body{font-size:16px}
-  header{padding:36px 0 28px}
-  .legend{grid-template-columns:1fr}
-  .legend div{border-left:0;border-top:1px solid var(--grid)}
-  .legend div:first-child{border-top:0}
-  .step{grid-template-columns:40px 1fr}
-  .num{font-size:15px;padding-top:20px}
-  .body{padding:16px 14px 18px}
-  .step h2{font-size:19px}
-  .files{grid-template-columns:1fr}
-  .files div:nth-child(odd){border-right:0}
-  .files div:nth-child(even){border-top:0}
-  .copy pre{padding-right:16px;padding-top:46px}
+  .top-in{padding:8px 12px;gap:10px}
+  .brand{display:none}
+  .cell{height:18px;font-size:0}
+  .app{grid-template-columns:1fr;gap:18px;padding:14px 12px 120px}
+  .stage-col{position:relative;top:0;order:-1}
+  .stage-wrap{border-radius:12px}
+  h1{font-size:40px}
+  h2{font-size:28px}
+  .ctrl{padding:10px 12px calc(10px + env(safe-area-inset-bottom))}
+  .ctrl .hint{display:none}
+  .nb{flex:1;padding:12px 10px}
+  .nb.back{flex:0 0 auto;min-width:56px}
+  .nb.go{min-width:0}
+  .copy button{min-width:96px}
+}
+
+/* Ниган и Ботя */
+.wire{height:18px;margin:0 0 16px;opacity:.55;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='18'%3E%3Cpath d='M0 9 Q15 5 30 9 T60 9' stroke='%23a99f91' stroke-width='1.6' fill='none'/%3E%3Cpath d='M0 10 Q15 14 30 10 T60 10' stroke='%23a99f91' stroke-width='1.2' fill='none'/%3E%3Cpath d='M26 3 L34 15 M34 3 L26 15' stroke='%23a99f91' stroke-width='1.6'/%3E%3C/svg%3E") repeat-x center}
+.say{display:flex;gap:14px;align-items:flex-end;margin-bottom:20px;cursor:pointer}
+.say img{width:92px;height:auto;flex:none;filter:drop-shadow(0 12px 14px rgba(0,0,0,.7));transform-origin:50% 100%;transition:opacity .25s}
+.say.talk img{animation:bob .45s ease-in-out infinite alternate}
+@keyframes bob{to{transform:translateY(-3px) rotate(-1.5deg)}}
+.bubble{position:relative;background:#efe6d6;color:#151311;border-radius:18px 18px 18px 4px;padding:12px 40px 12px 14px;font-size:15.5px;line-height:1.45;font-weight:500;min-height:58px;flex:1;box-shadow:0 10px 24px -10px rgba(0,0,0,.6)}
+.bubble b{display:block;font-family:"Dela Gothic One",sans-serif;font-weight:400;font-size:13px;color:var(--blood);margin-bottom:2px}
+.eq{position:absolute;right:12px;top:12px;display:flex;gap:2px;align-items:flex-end;height:14px;opacity:.25}
+.say.talk .eq{opacity:1}
+.eq i{width:3px;height:4px;background:var(--blood);border-radius:1px}
+.say.talk .eq i{animation:eq .5s ease-in-out infinite alternate}
+.eq i:nth-child(2){animation-delay:.15s}.eq i:nth-child(3){animation-delay:.3s}.eq i:nth-child(4){animation-delay:.45s}
+@keyframes eq{from{height:3px}to{height:14px}}
+.snd{border:1.5px solid var(--grid);background:var(--sheet);color:var(--ink);border-radius:8px;padding:5px 10px;font-weight:700;font-size:13px;white-space:nowrap}
+.snd.off{opacity:.55;text-decoration:line-through}
+.how{border:1.5px dashed var(--mark);border-radius:12px;padding:12px 14px;margin:14px 0;max-width:52ch;font-weight:600;display:grid;gap:8px}
+.only-touch{display:none}
+@media (hover:none) and (pointer:coarse){.only-touch{display:block}.only-desk{display:none}}
+.hand{display:inline-block;animation:swipe 1.6s ease-in-out infinite}
+@keyframes swipe{0%,100%{transform:translateX(10px)}50%{transform:translateX(-14px)}}
+@media (max-width:900px){.say img{width:72px}.bubble{font-size:15px}body.is-intro .stage-col{display:none}h1{font-size:32px}.how{margin-top:0}}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
 }
 </style>
 </head>
 <body>
 
-<div class="wrap">
-<header>
-  <h1>Агент в Codex: установка по шагам</h1>
-  <p class="lead">Архив с файлами придёт в Телеграм. Здесь написано, куда его положить, что нажать в Codex и как потом работать. Отмечай шаги кнопкой «Сделано»: строка зальётся зелёным, как занесённая заявка в таблице.</p>
-  <div class="legend" aria-label="Цвета, которые использует агент">
-    <div class="g"><b>Бледно-зелёный</b>заявка занесена, статус в банке проверен</div>
-    <div class="r"><b>Слабо-красный</b>заявка пропущена, причина в столбце G</div>
-    <div class="y"><b>Жёлтый</b>только столбец A: MT103 скачан</div>
-  </div>
-  <p class="why"><strong>Что меняется.</strong> Сейчас правила живут в переписке, и когда Codex пишет «Контекст автоматически сжат», часть правил пропадает. Агент начинает додумывать: например, берёт цвет с соседних строк. После установки правила лежат в файлах, и Codex подставляет их заново после каждого сжатия. Каждое действие агента записывается в журнал, откатывать может только ты.</p>
-</header>
-</div>
+<div class="top"><div class="top-in">
+  <div class="brand">Агент в Codex</div>
+  <div class="cells" id="cells"></div>
+  <div class="count" id="count"></div>
+  <button class="snd" id="snd" type="button" aria-pressed="true">🔊 Звук</button>
+</div></div>
 
-<nav class="bar" aria-label="Прогресс">
-  <div class="wrap">
-    <div class="cells" id="cells"></div>
-    <span class="count" id="count">0 из 0</span>
-  </div>
-</nav>
+<main class="app">
+  <section class="panel"><div class="wire" aria-hidden="true"></div><div class="say" id="say" title="Повторить реплику"><img id="sayImg" src="img/botya.webp" alt=""><div class="bubble"><b id="sayWho">Ботя</b><span id="sayText"></span><span class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span></div></div><div class="panel-in" id="panel" aria-live="polite"></div></section>
+  <section class="stage-col" aria-label="Показ: куда нажимать">
+    <div class="stage-wrap" id="wrap"><div class="stage" id="stage"></div></div>
+    <button class="replay" id="replay" type="button">↻ Показать ещё раз</button>
+  </section>
+</main>
 
-<main class="wrap">
-<ol class="steps" id="steps">
+<nav class="ctrl" aria-label="Шаги"><div class="ctrl-in">
+  <span class="hint">Листать: красная кнопка или стрелки ← → на клавиатуре</span>
+  <button class="nb back" id="back" type="button" aria-label="Назад">←</button>
+  <button class="nb go" id="next" type="button"><span id="nextLabel">Начать</span></button>
+</div></nav>
 
-<li class="step" id="s1"><div class="num">1</div><div class="body">
-  <h2>Скачай архив из Телеграма</h2>
-  <div class="detail">
-    <p>Файл <span class="fn">codex-agent.zip</span>. Внутри:</p>
-    <div class="files">
-      <div>AGENTS.md</div><div>Правила и твоё ТЗ дословно. Codex читает его сам в каждом чате и после каждого сжатия.</div>
-      <div>rules.json</div><div>Все цвета, коды, порядок валют, столбцы таблицы. Агент берёт значения только отсюда.</div>
-      <div>СТАРТ.txt</div><div>Текст для первого чата. Вставишь на шаге 6.</div>
-      <div>Журнал.cmd</div><div>Двойной клик: открыть журнал действий агента в браузере.</div>
-      <div>Откат.cmd</div><div>Двойной клик: отметить откат. Работает только с твоим PIN.</div>
-      <div>ПИН.cmd</div><div>Двойной клик: задать PIN для отката.</div>
-      <div>.agents/skills/</div><div>Три инструкции для агента: занесение заявки, MT103, журнал.</div>
-      <div>.codex/config.toml</div><div>Ставит уровень рассуждений «высокий» для этой папки.</div>
-      <div>tools/</div><div>Скрипты журнала, настроек, проверки файлов и (по желанию) скачивания из Телеграма.</div>
-    </div>
-    <p style="margin-top:12px">Файлы, имя которых начинается с точки (<span class="fn">.agents</span>, <span class="fn">.codex</span>), Проводник может не показывать. Они на месте.</p>
-  </div>
-  <p class="done-note">Архив скачан.</p>
-  <button class="mark-done" type="button">Сделано</button>
-</div></li>
-
-<li class="step" id="s2"><div class="num">2</div><div class="body">
-  <h2>Проверь, что есть Python</h2>
-  <div class="detail">
-    <p>Нажми Пуск, набери <span class="fn">PowerShell</span>, открой и вставь:</p>
-    <div class="copy"><pre>python --version</pre><button type="button">Скопировать</button></div>
-    <p>Ответ вида <b>Python 3.12.x</b> (3.10 или новее) означает, что всё в порядке. Если пишет «не найдено», поставь Python с python.org и при установке поставь галочку <span class="fn">Add python.exe to PATH</span>. Потом закрой и снова открой PowerShell и проверь ещё раз.</p>
-  </div>
-  <p class="done-note">Python есть.</p>
-  <button class="mark-done" type="button">Сделано</button>
-</div></li>
-
-<li class="step" id="s3"><div class="num">3</div><div class="body">
-  <h2>Распакуй в C:\codex-agent</h2>
-  <div class="detail">
-    <p>Правой кнопкой по архиву → «Извлечь всё» → путь <span class="fn">C:\codex-agent</span>. Не на рабочий стол и не в «Загрузки»: так путь короткий и не меняется.</p>
-    <p>Открой папку. Сверху должны лежать <span class="fn">AGENTS.md</span> и <span class="fn">СТАРТ.txt</span>, а не ещё одна папка codex-agent внутри. Если вложилась вторая папка, перенеси её содержимое на уровень выше.</p>
-    <figure>
-      <svg viewBox="0 0 760 250" role="img" aria-label="Папка C:\codex-agent в Проводнике">
-        <rect width="760" height="250" fill="#ffffff"/>
-        <rect width="760" height="40" fill="#f3f3f3"/>
-        <text x="16" y="26" font-family="Segoe UI,sans-serif" font-size="15" fill="#222">📁  Этот компьютер  ›  Локальный диск (C:)  ›  codex-agent</text>
-        <g font-family="Segoe UI,sans-serif" font-size="15" fill="#222">
-          <text x="24" y="72">📁 .agents</text><text x="24" y="98">📁 .codex</text><text x="24" y="124">📁 tools</text>
-          <text x="24" y="150">📄 AGENTS.md</text><text x="24" y="176">📄 rules.json</text><text x="24" y="202">📄 СТАРТ.txt</text>
-          <rect x="380" y="56" width="190" height="26" fill="#ffef5c"/><text x="390" y="74">⚙ Журнал.cmd</text>
-          <rect x="380" y="86" width="190" height="26" fill="#ffef5c"/><text x="390" y="104">⚙ Откат.cmd</text>
-          <rect x="380" y="116" width="190" height="26" fill="#ffef5c"/><text x="390" y="134">⚙ ПИН.cmd</text>
-          <text x="590" y="74" fill="#666" font-size="13">журнал</text>
-          <text x="590" y="104" fill="#666" font-size="13">только ты</text>
-          <text x="590" y="134" fill="#666" font-size="13">только ты</text>
-        </g>
-      </svg>
-      <figcaption>Жёлтым отмечено то, что запускаешь ты сам двойным кликом. Остальное для агента.</figcaption>
-    </figure>
-  </div>
-  <p class="done-note">Файлы лежат в C:\codex-agent.</p>
-  <button class="mark-done" type="button">Сделано</button>
-</div></li>
-
-<li class="step" id="s4"><div class="num">4</div><div class="body">
-  <h2>Открой папку в Codex как проект</h2>
-  <div class="detail">
-    <p>В Codex слева раздел <b>Проекты</b> → добавить проект или открыть папку → выбери <span class="fn">C:\codex-agent</span>.</p>
-    <p>Если Codex спросит, доверять ли папке, отвечай <b>«Доверять»</b>. Это обязательно: для папки без доверия Codex не читает AGENTS.md, и все правила пропадут.</p>
-    <figure>
-      <svg viewBox="0 0 760 300" role="img" aria-label="Окно Codex: раздел Проекты и вопрос о доверии папке">
-        <rect width="760" height="300" fill="#1b1c1e"/>
-        <rect width="230" height="300" fill="#202124"/>
-        <g font-family="Segoe UI,sans-serif" font-size="15" fill="#e6e6e6">
-          <text x="20" y="36" font-weight="700" font-size="17">Codex</text>
-          <text x="20" y="76">✎  Новый чат</text>
-          <rect x="10" y="98" width="210" height="34" rx="6" fill="none" stroke="#ffef5c" stroke-width="3"/>
-          <text x="20" y="121">Проекты  ›</text>
-          <text x="20" y="160" fill="#9a9a9a">Недавние  ›</text>
-          <rect x="300" y="70" width="400" height="160" rx="10" fill="#2a2b2e" stroke="#3a3b3f"/>
-          <text x="324" y="108" font-weight="600">Доверять этой папке?</text>
-          <text x="324" y="136" fill="#b5b5b5" font-size="14">C:\codex-agent</text>
-          <rect x="324" y="168" width="120" height="38" rx="6" fill="#3a3b3f"/>
-          <text x="355" y="192" fill="#cfcfcf">Отмена</text>
-          <rect x="560" y="168" width="120" height="38" rx="6" fill="#e6e6e6" stroke="#ffef5c" stroke-width="3"/>
-          <text x="582" y="192" fill="#1b1c1e" font-weight="600">Доверять</text>
-        </g>
-      </svg>
-      <figcaption>Названия кнопок у тебя могут немного отличаться. Смысл тот же: добавить папку и разрешить ей доверие.</figcaption>
-    </figure>
-  </div>
-  <p class="done-note">Проект открыт, папке доверяем.</p>
-  <button class="mark-done" type="button">Сделано</button>
-</div></li>
-
-<li class="step" id="s5"><div class="num">5</div><div class="body">
-  <h2>Подними уровень рассуждений</h2>
-  <div class="detail">
-    <p>Внизу у поля ввода сейчас стоит <b>«GPT-6 Sol Лёгкое»</b>. Нажми на него и выбери <b>«Высокое»</b>. Если такого пункта нет, выбери самый высокий из доступных, но не ниже «Среднего».</p>
-    <p>На «Лёгком» модель меньше думает перед действием. Для переводов денег это лишняя экономия: ошибка в счёте стоит дороже минуты ожидания. Файл <span class="fn">.codex/config.toml</span> ставит «высокий» уровень для этой папки сам, но лучше проверить и в окне.</p>
-    <figure>
-      <svg viewBox="0 0 760 230" role="img" aria-label="Поле ввода Codex и выбор уровня рассуждений">
-        <rect width="760" height="230" fill="#1b1c1e"/>
-        <rect x="20" y="150" width="720" height="60" rx="16" fill="#2a2b2e" stroke="#3a3b3f"/>
-        <g font-family="Segoe UI,sans-serif" font-size="15" fill="#e6e6e6">
-          <text x="44" y="186" font-size="20">+</text>
-          <text x="80" y="186" fill="#e8a23a">ⓘ Полный доступ</text>
-          <rect x="468" y="160" width="200" height="38" rx="8" fill="none" stroke="#ffef5c" stroke-width="3"/>
-          <text x="480" y="185">GPT-6 Sol  <tspan fill="#9a9a9a">Лёгкое ⌄</tspan></text>
-          <rect x="470" y="14" width="200" height="128" rx="10" fill="#2a2b2e" stroke="#3a3b3f"/>
-          <text x="490" y="46" fill="#9a9a9a">Лёгкое</text>
-          <text x="490" y="78" fill="#cfcfcf">Среднее</text>
-          <rect x="478" y="92" width="184" height="32" rx="6" fill="#ffef5c"/>
-          <text x="490" y="114" fill="#1b1c1e" font-weight="600">Высокое  ✓</text>
-        </g>
-      </svg>
-    </figure>
-  </div>
-  <p class="done-note">Уровень «Высокое».</p>
-  <button class="mark-done" type="button">Сделано</button>
-</div></li>
-
-<li class="step" id="s6"><div class="num">6</div><div class="body">
-  <h2>Новый чат в проекте: вставь СТАРТ.txt</h2>
-  <div class="detail">
-    <p>Нажми <b>«Новый чат»</b> внутри проекта codex-agent. Вставь текст ниже целиком (он же лежит в <span class="fn">СТАРТ.txt</span>) и отправь.</p>
-    <div class="copy"><pre id="start">Это первый запуск проекта. Все файлы уже лежат в этой папке, их писал не ты: ничего в них не переписывай, не улучшай и не создавай заново.
+<script type="text/plain" id="t-start">Это первый запуск проекта. Все файлы уже лежат в этой папке, их писал не ты: ничего в них не переписывай, не улучшай и не создавай заново.
 
 Сделай по шагам и после каждого покажи вывод:
 
@@ -275,214 +242,246 @@ footer{padding:40px 0 60px;color:var(--ink-2);font-size:15px}
 3. python tools/journal.py resume
 4. python tools/setup.py missing
    Задай мне ВСЕ вопросы из вывода ОДНИМ сообщением, пронумеруй. Дождись ответа.
-   Каждый ответ запиши: python tools/setup.py set &lt;поле&gt; "&lt;значение&gt;"
+   Каждый ответ запиши: python tools/setup.py set <поле> "<значение>"
    Потом снова python tools/setup.py missing — должно быть «Все настройки заполнены».
 5. python tools/journal.py note --cat "Система" --what "Комплект установлен, настройки заполнены"
 6. Перескажи мне коротко своими словами: 8 пунктов ТЗ из AGENTS.md, все запреты, какие команды журнала тебе доступны и что ты делаешь, если ошибся.
 
-В банк, таблицу и Телеграм пока не заходи. Дальше работаю фразами вроде «Занеси заявки 1040–1045» и «Докачай свифты за сегодня».</pre><button type="button">Скопировать</button></div>
-    <p>Если на шаге «check_kit» агент пишет «Комплект не совпадает», значит, какой-то файл испорчен. Распакуй архив заново.</p>
-  </div>
-  <p class="done-note">Агент проверил файлы.</p>
-  <button class="mark-done" type="button">Сделано</button>
-</div></li>
+В банк, таблицу и Телеграм пока не заходи. Дальше работаю фразами вроде «Занеси заявки 1040–1045» и «Докачай свифты за сегодня».</script>
 
-<li class="step" id="s7"><div class="num">7</div><div class="body">
-  <h2>Ответь на вопросы агента одним сообщением</h2>
-  <div class="detail">
-    <p>Агент спросит всё, чего нет в ТЗ, одним списком. Ответь так же одним сообщением, по номерам. Он запишет ответы в <span class="fn">rules.json</span>, и каждая запись попадёт в журнал. Потом он больше не переспрашивает.</p>
-    <ul>
-      <li><b>Папка документов</b>: куда ты скачиваешь Statement и Invoice из рабочей группы. Например <span class="fn">C:\Users\…\Downloads\Заявки</span>.</li>
-      <li><b>Charge to</b>: OUR, BEN или SHA.</li>
-      <li><b>Beneficiary Citizenship</b>: Citizen или Non Citizen.</li>
-      <li><b>Relationship with Remitter</b>: Overseas Subsidiary, Non-Affiliated, Shareholder или Group.</li>
-    </ul>
-    <p>Отдельно проверь в <span class="fn">rules.json</span> слабо-красный цвет. В ТЗ кода нет, стоит <b>#F4CCCC</b>. Если у вас другой, скажи агенту: «Запиши colors.skipped = #……».</p>
-    <p>В конце агент перескажет правила своими словами. Если что-то пересказал неправильно, поправь сразу, пока он не начал работать.</p>
-  </div>
-  <p class="done-note">Настройки заполнены.</p>
-  <button class="mark-done" type="button">Сделано</button>
-</div></li>
+<script type="text/plain" id="t-check">Проверь эту папку на безопасность. Ничего не запускай и не меняй: только читай файлы.
 
-<li class="step" id="s8"><div class="num">8</div><div class="body">
-  <h2>Задай PIN для отката</h2>
-  <div class="detail">
-    <p>В папке <span class="fn">C:\codex-agent</span> двойной клик по <span class="fn">ПИН.cmd</span>. Введи PIN из 6 и более цифр, повтори. Символы при вводе не видны, так и задумано.</p>
-    <div class="warn">PIN не пиши в чат Codex и никуда не сохраняй рядом с папкой. Пока агент его не знает, он не может ни откатить, ни изменить, ни удалить запись журнала. Только дописать новую.</div>
-  </div>
-  <p class="done-note">PIN задан.</p>
-  <button class="mark-done" type="button">Сделано</button>
-</div></li>
+1. Прочитай целиком каждый файл: AGENTS.md, rules.json, СТАРТ.txt, ПРОВЕРКА-БЕЗОПАСНОСТИ.txt, Журнал.cmd, Откат.cmd, ПИН.cmd, Инструкция.url, .codex/config.toml, .gitignore, всё в tools/ и в .agents/skills/.
 
-<li class="step" id="s9"><div class="num">9</div><div class="body">
-  <h2>Работа каждый день</h2>
-  <div class="detail">
-    <p>Документы скачиваешь, как раньше, в ту папку, которую назвал агенту. Дальше пишешь агенту обычными словами. Примеры:</p>
-    <div class="copy"><pre>Занеси заявки 1040–1045</pre><button type="button">Скопировать</button></div>
-    <div class="copy"><pre>Нажал Submit по всем. Проверь статусы в банке и отметь в таблице</pre><button type="button">Скопировать</button></div>
-    <div class="copy"><pre>Докачай свифты за сегодня и выложи</pre><button type="button">Скопировать</button></div>
-    <p>Как идёт пачка:</p>
-    <ul>
-      <li>агент сверяет документы, собирает формы до экрана Submit и останавливается;</li>
-      <li>ты смотришь и нажимаешь Submit сам, потом пишешь «нажал»;</li>
-      <li>агент проверяет фактический статус и только после этого красит ячейку.</li>
-    </ul>
-    <p><b>Как агент проверяет сам себя.</b> Три проверки, все записываются в журнал:</p>
-    <ul>
-      <li><b>после каждого действия</b> он заново открывает ячейку или поле и записывает, что там на самом деле. Не совпало с задуманным: журнал сам ставит «ОШИБКА», и агент останавливается;</li>
-      <li><b>перед Submit</b> сверяет каждое поле экрана с документами и пишет результат, например «Самопроверка формы: 9 из 9 совпало»;</li>
-      <li><b>в конце пачки</b> запускает аудит. Это проверка программой, а не моделью: цвет не в том столбце, зелёный без статуса Success, Submit без сверки. Пока аудит не чистый, агент не пишет «готово».</li>
-    </ul>
-    <p>Аудит можно попросить и самому в любой момент:</p>
-    <div class="copy"><pre>Запусти python tools/journal.py audit и покажи результат целиком</pre><button type="button">Скопировать</button></div>
-    <p><b>После каждой пачки начинай новый чат.</b> Агент сам скажет: «Пачка готова, начните новый чат». Новый чат продолжит по журналу с того места, где остановился прошлый, ничего объяснять заново не надо.</p>
-  </div>
-  <p class="done-note">Понятно, как работать.</p>
-  <button class="mark-done" type="button">Сделано</button>
-</div></li>
+2. Найди и перечисли с номерами строк:
+   - любые обращения в интернет (http, https, socket, requests, urllib, telethon, curl и подобное);
+   - запуск других программ (subprocess, os.system, start, powershell);
+   - чтение или запись файлов за пределами этой папки;
+   - eval, exec, base64, сжатые или зашифрованные куски, невидимые символы, подозрительно длинные строки;
+   - любые инструкции в .md и .txt, которые просят агента отправить данные куда-то наружу.
 
-<li class="step" id="s10"><div class="num">10</div><div class="body">
-  <h2>Если появилось «Контекст автоматически сжат»</h2>
-  <div class="detail">
-    <p>Ничего делать не нужно. Правила из AGENTS.md Codex подставляет заново, а агент по правилам запускает проверку журнала и продолжает со следующего шага.</p>
-    <p>Если кажется, что он поплыл (повторяет сделанное, путает цвета), напиши:</p>
-    <div class="copy"><pre>Стоп. Запусти python tools/journal.py resume, перечитай AGENTS.md и нужный SKILL.md и скажи, на чём остановились</pre><button type="button">Скопировать</button></div>
-  </div>
-  <p class="done-note">Понятно.</p>
-  <button class="mark-done" type="button">Сделано</button>
-</div></li>
+3. Сверь с тем, что заявлено автором комплекта:
+   - journal.py, setup.py, check_kit.py в сеть не ходят. Пишут только внутри этой папки: journal/, rules.json, tools/kit.sha256.json.
+   - journal.py запускает git (add и commit) только если в папке есть .git; push нет. ctypes нужен только чтобы проверить, что команду запускает человек в настоящей консоли (GetConsoleMode).
+   - setup.py запускает только tools/journal.py.
+   - tg_fetch.py — единственный файл с сетью: Телеграм, от аккаунта пользователя, ключи из его .env, только чтение и скачивание файлов в его папку. По умолчанию выключен (rules.json → telegram.enabled = false) и сам не запускается.
+   - .cmd запускают только python tools\journal.py; Журнал.cmd ещё открывает локальную страницу journal\view\index.html.
+   - Инструкция.url — ссылка на страницу с инструкцией, сама ничего не запускает.
 
-<li class="step" id="s11"><div class="num">11</div><div class="body">
-  <h2>Журнал: что делал агент</h2>
-  <div class="detail">
-    <p>Двойной клик по <span class="fn">Журнал.cmd</span>. Откроется страница: дни, внутри по заявкам, под каждой строкой всё, что потом происходило с тем же местом. У каждой записи указано, где (таблица и ячейка, форма в банке, тема SWIFT), что было до и что стало.</p>
-    <figure>
-      <img src="journal.png" alt="Пример журнала: заявка 1040 занесена, 1041 пропущена с причиной, у MT103 самопроверка поймала неверный цвет, откат сделал пользователь" loading="lazy" width="900" height="1404">
-      <figcaption>Пример. Агент хотел покрасить A1092 жёлтым, перечитал ячейку и увидел голубой. Самопроверка (строка с ✗) сама записала «ОШИБКА», агент остановился. Откат сделал пользователь, после этого агент покрасил правильно, и проверка прошла (✓).</figcaption>
-    </figure>
-    <ul>
-      <li>Агент может только <b>дописывать</b>. Старые строки он не правит и не удаляет.</li>
-      <li>Если кто-то всё же изменит или сотрёт строку в файле журнала, сверху страницы появится «ЖУРНАЛ ПОВРЕЖДЁН», и агент остановит работу.</li>
-      <li>Файлы журнала лежат в <span class="fn">C:\codex-agent\journal</span>, по одному на день. Прошлые дни закрываются «только чтение».</li>
-    </ul>
-  </div>
-  <p class="done-note">Журнал открывается.</p>
-  <button class="mark-done" type="button">Сделано</button>
-</div></li>
-
-<li class="step" id="s12"><div class="num">12</div><div class="body">
-  <h2>Откат: только ты и только руками</h2>
-  <div class="detail">
-    <p>Если агент ошибся, он не исправляет сам. Он пишет в журнал «ОШИБКА», останавливается и сообщает тебе номер записи.</p>
-    <ul>
-      <li>Двойной клик по <span class="fn">Откат.cmd</span>.</li>
-      <li>Введи номер записи из журнала, например <span class="fn">2026-10-20-007</span>. Окно покажет, где это и какое значение было до.</li>
-      <li>Верни это значение руками в таблице или в банке и проверь.</li>
-      <li>Нажми Enter, коротко напиши причину, введи PIN.</li>
-    </ul>
-    <p>В журнале под исходной строкой появится «откат · Саша». Агент такую запись сделать не может.</p>
-    <div class="warn">Перевод, по которому уже нажат Submit, откатом не отменяется. Это решается в банке.</div>
-  </div>
-  <p class="done-note">Понятно, как откатить.</p>
-  <button class="mark-done" type="button">Сделано</button>
-</div></li>
-
-<li class="step" id="s13"><div class="num">13</div><div class="body">
-  <h2>Проверь автоматизацию «Виртуальный офис»</h2>
-  <div class="detail">
-    <p>У тебя есть запланированная задача, которая срабатывает каждые 10 минут. Если она запускается не в проекте codex-agent, то правил, журнала и запретов не видит. Открой её настройки и выбери папку <span class="fn">C:\codex-agent</span>. Если поменять папку нельзя, пересоздай задачу внутри проекта.</p>
-  </div>
-  <p class="done-note">Автоматизация в правильной папке.</p>
-  <button class="mark-done" type="button">Сделано</button>
-</div></li>
-
-<li class="step" id="s14"><div class="num">14</div><div class="body">
-  <h2>Потом, по желанию: агент сам забирает документы из группы <span class="opt">необязательно</span></h2>
-  <div class="detail">
-    <p>Сейчас документы качаешь ты, чтобы не тратить квоту Codex. В комплекте есть скрипт <span class="fn">tools/tg_fetch.py</span>: он скачивает Statement и Invoice по номерам заявок из рабочей группы в твою папку. Квоту модели он не тратит, потому что файлы качает сам скрипт, а не агент через браузер. Работает от твоего аккаунта и только читает: ничего не пишет и не отправляет.</p>
-    <details>
-      <summary>Как включить</summary>
-      <div>
-        <ul>
-          <li>На <b>my.telegram.org</b> → API development tools получи api_id и api_hash.</li>
-          <li>Создай в <span class="fn">C:\codex-agent</span> файл <span class="fn">.env</span> с двумя строками: <span class="fn">TG_API_ID=…</span> и <span class="fn">TG_API_HASH=…</span>. Впиши сам, в чат не отправляй.</li>
-          <li>В PowerShell в этой папке: <span class="fn">pip install telethon</span>, затем <span class="fn">python tools\tg_fetch.py login --phone +…</span>, потом <span class="fn">--code</span> из Телеграма.</li>
-          <li>Скажи агенту: «Включи Телеграм-блок, группа такая-то». Он запишет <span class="fn">telegram.enabled</span> и <span class="fn">telegram.group</span> через настройки.</li>
-          <li>Дальше фраза «Забери документы 1040–1045 из группы».</li>
-        </ul>
-      </div>
-    </details>
-  </div>
-  <p class="done-note">Решено.</p>
-  <button class="mark-done" type="button">Сделано</button>
-</div></li>
-
-</ol>
-</main>
-
-<footer class="wrap">
-  Отметки шагов хранятся только в этом браузере. <button class="reset" type="button" id="reset">Снять все отметки</button>
-</footer>
+4. Ответ дай так: таблица «файл | что делает | ходит ли в сеть и куда | что пишет на диск». Потом одна строка вердикта: «Утечек и скрытого кода нет» или что именно не совпало с заявленным.</script>
 
 <script>
 (function(){
-  var KEY = "codex-agent-steps";
-  var steps = Array.prototype.slice.call(document.querySelectorAll(".step"));
-  var cells = document.getElementById("cells");
-  var count = document.getElementById("count");
-  var done = {};
-  try { done = JSON.parse(localStorage.getItem(KEY) || "{}") || {}; } catch (e) { done = {}; }
+"use strict";
+var CURSOR='<div class="cursor" id="cur"><svg width="26" height="26" viewBox="0 0 26 26"><path d="M3 2 L3 21 L8.5 16 L12 24 L15.5 22.5 L12 15 L19.5 15 Z" fill="#fff" stroke="#111" stroke-width="1.6" stroke-linejoin="round"/></svg></div>';
+var TB=function(t){return '<div class="titlebar"><i></i><i></i><i></i><span style="margin-left:6px">'+t+'</span></div>';};
+var CXSIDE=function(extra){return '<div class="side"><div class="it" style="font-weight:700;font-size:16px;margin-bottom:12px">Codex</div><div class="it" id="newchat">✎ Новый чат</div><div class="it" id="projects">Проекты ›</div><div class="it m">Недавние ›</div>'+(extra||'')+'<div class="it m" id="avatar" style="position:absolute;bottom:14px;left:10px;right:10px">◉ Аккаунт · Настройки</div></div>';};
+var COMPOSER='<div class="composer"><span style="font-size:20px;color:var(--cx-ink)">+</span><span class="full">ⓘ Полный доступ</span><span class="model" id="model">GPT-6 Sol <span style="color:var(--cx-mute)" id="effort">Лёгкое</span> ⌄</span><span class="send">↑</span></div>';
 
-  steps.forEach(function(s){
-    var a = document.createElement("a");
-    a.href = "#" + s.id;
-    a.setAttribute("aria-label", "Шаг " + s.querySelector(".num").textContent);
-    cells.appendChild(a);
-    s.querySelector(".mark-done").addEventListener("click", function(){
-      done[s.id] = !done[s.id];
-      save(); render();
-      if (done[s.id]) {
-        var next = steps.filter(function(x){ return !done[x.id]; })[0];
-        if (next) next.scrollIntoView({block: "start"});
-      }
-    });
-  });
+var STEPS=[
+/* 0 intro */
+{intro:true,cell:"",
+panel:'<div class="how"><div class="only-desk">🖱 Листать: жми красную кнопку «Дальше» внизу или стрелку → на клавиатуре.</div><div class="only-touch"><span class="hand">👆</span> Листать: проведи пальцем влево по экрану или жми красную кнопку внизу.</div><div>🔊 Включи звук. Ниган и Ботя всё расскажут голосом. Облачко нажимается: повторят ещё раз.</div></div><h1>Агент для заявок. Ставим за 15&nbsp;минут</h1><p>Справа (на телефоне сверху) курсор сам показывает, куда тыкать. Повторяешь за ним, жмёшь «Дальше». Шаг заливается зелёным, как занесённая заявка.</p><div class="ok"><b>Что получишь.</b> Правила не теряются, когда чат сжимается. Агент сам себя проверяет, каждое его действие в журнале, откатываешь только ты. Данные в обучение не уходят.</div><p class="mute">Ставить надо с компьютера: там Codex. С телефона сначала просто пролистай и посмотри.</p>',
+stage:'<div class="win" style="background:#eef1f4"><div class="sheet" style="left:60px;top:60px;width:420px"><div class="rw"><div>A</div><div>Заявка</div><div>Сумма</div></div><div class="rw"><div id="a1">1040</div><div>сверка ✓ · самопроверка 9/9</div><div id="s1">5 200,00</div></div><div class="rw"><div>1041</div><div>счёт не совпал</div><div id="s2">67 320,00</div></div><div class="rw"><div id="a3">1042</div><div>ждёт Submit</div><div id="s3">240 065,31</div></div></div><div style="position:absolute;left:300px;top:270px;width:440px;background:#1b1c1e;border-radius:12px;padding:16px 18px;font:14px/1.7 Consolas,monospace;color:#e8e8e8" id="log"><div class="hide"><span class="y">+ внесено</span> I1092 → #D9EAD3 <span class="y">✓ проверил</span></div><div class="hide"><span class="r">! ОШИБКА</span> A1094: на месте голубой</div><div class="hide"><span style="color:#c4b5fd">↺ откат</span> только Саша, по PIN</div><div class="hide"><span class="y">аудит:</span> нарушений нет</div></div></div>',
+seq:[{wait:400},{bg:["#s1","#d9ead3"]},{showN:["#log",0]},{wait:500},{bg:["#s2","#f4cccc"]},{wait:400},{bg:["#a1","#ffef5c"]},{showN:["#log",1]},{wait:600},{showN:["#log",2]},{wait:600},{showN:["#log",3]}]},
 
-  function save(){ try { localStorage.setItem(KEY, JSON.stringify(done)); } catch (e) {} }
+/* 1 unzip */
+{cell:"1",title:"Распакуй архив",
+panel:'<p>В Телеге придёт <span class="path">codex-agent.zip</span>. Правой кнопкой по нему → <b>«Извлечь всё…»</b> → впиши путь и нажми «Извлечь»:</p><div class="copy"><code>C:\\codex-agent</code><button type="button" data-copy="C:\\codex-agent">Скопировать</button></div><p>Открой папку: сверху должны лежать <span class="path">AGENTS.md</span> и <span class="path">СТАРТ.txt</span>. Если внутри оказалась ещё одна папка codex-agent, перенеси её содержимое на уровень выше.</p><p class="mute">Папки с точкой в начале (.agents, .codex) Проводник может прятать. Они на месте.</p>',
+stage:'<div class="win light">'+TB("Загрузки")+'<div class="side"><div class="it">⭐ Быстрый доступ</div><div class="it on">⬇ Загрузки</div><div class="it">🖥 Рабочий стол</div><div class="it">💽 Диск C:</div></div><div class="files"><div class="fi" id="zip"><div class="ic zip">ZIP</div>codex-agent.zip</div><div class="fi"><div class="ic txt">PDF</div>1040 invoice.pdf</div><div class="fi"><div class="ic md">DOC</div>1040 statement.docx</div></div><div class="menu hide" id="ctx" style="left:300px;top:150px"><div>Открыть</div><div id="extract" style="font-weight:600">Извлечь всё…</div><div>Отправить</div><div>Свойства</div></div><div class="dlg hide" id="dlg" style="left:180px;top:150px;width:470px"><div style="font-weight:600;font-size:16px;margin-bottom:12px">Извлечение сжатых ZIP-папок</div><div style="font-size:13px;margin-bottom:6px">Файлы будут извлечены в эту папку:</div><div class="field" id="path"></div><div style="text-align:right;margin-top:16px"><span class="btn">Отмена</span> <span class="btn pri" id="go">Извлечь</span></div></div></div>',
+seq:[{click:"#zip"},{show:"#ctx"},{click:"#extract"},{hide:"#ctx"},{show:"#dlg"},{type:["#path","C:\\codex-agent"]},{click:"#go"}]},
 
-  function render(){
-    var links = cells.children, n = 0, nowSet = false;
-    steps.forEach(function(s, i){
-      var isDone = !!done[s.id];
-      var isNow = !isDone && !nowSet;
-      if (isNow) nowSet = true;
-      if (isDone) n++;
-      s.classList.toggle("done", isDone);
-      s.classList.toggle("now", isNow);
-      links[i].className = isDone ? "done" : (isNow ? "now" : "");
-      s.querySelector(".mark-done").textContent = isDone ? "Вернуть шаг" : "Сделано";
-    });
-    count.textContent = n === steps.length ? "Готово" : (n + " из " + steps.length);
+/* 2 data controls chatgpt */
+{cell:"2",title:"Галочка 1: переписка не идёт в обучение",
+panel:'<p>Через чат с агентом проходят суммы, счета, названия контрагентов. Эта галочка запрещает OpenAI учить на них модели. Она действует и на ChatGPT, и на задачи Codex.</p><ol><li>Открой <b>chatgpt.com</b> → значок аккаунта слева внизу → <b>Настройки</b>.</li><li><b>Управление данными</b> <span class="en">(Data controls)</span>.</li><li><b>«Улучшать модель для всех»</b> <span class="en">(Improve the model for everyone)</span> → выключить.</li></ol><div class="ok">Второй способ, если удобнее: <b>privacy.openai.com</b> → «Do not train on my content». Хватает одного из двух.</div><p class="mute">На тарифах Business и Enterprise обучение выключено по умолчанию, но всё равно проверь.</p>',
+stage:'<div class="win">'+TB("chatgpt.com")+'<div class="side"><div class="it" style="font-weight:700;font-size:16px;margin-bottom:12px">ChatGPT</div><div class="it">✎ Новый чат</div><div class="it m">Поиск</div><div class="it m" id="acc" style="position:absolute;bottom:14px;left:10px;right:10px">◉ Аккаунт</div></div><div class="menu hide" id="am" style="left:16px;top:340px"><div>Мой план</div><div id="sett" style="font-weight:600">⚙ Настройки</div><div>Выйти</div></div><div class="dlg hide" id="sd" style="left:150px;top:60px;width:600px;height:380px;padding:0;display:flex"><div style="width:190px;border-right:1px solid var(--cx-line);padding:14px 8px"><div class="it" style="padding:8px 10px">Общие</div><div class="it" style="padding:8px 10px">Уведомления</div><div class="it" style="padding:8px 10px">Персонализация</div><div class="it" id="dc" style="padding:8px 10px;border-radius:7px">Управление данными</div><div class="it" style="padding:8px 10px">Безопасность</div></div><div style="flex:1;padding:18px 22px" id="dcp" class="hide"><div style="font-weight:700;font-size:17px;margin-bottom:4px">Управление данными</div><div class="row"><div>Улучшать модель для всех<small>Improve the model for everyone</small></div><div class="tg" id="t1"></div></div><div class="row"><div>Общие ссылки<small>Shared links</small></div><span class="btn" style="font-size:13px">Управлять</span></div><div style="margin-top:16px" id="st1" class="hide"><span class="badge off">Выключено ✓</span></div></div></div></div>',
+seq:[{click:"#acc"},{show:"#am"},{click:"#sett"},{hide:"#am"},{show:"#sd"},{click:"#dc"},{show:"#dcp"},{wait:300},{click:"#t1"},{off:"#t1"},{show:"#st1"}]},
+
+/* 3 codex settings */
+{cell:"3",title:"Галочка 2: в настройках Codex",
+panel:'<p>В самом Codex есть отдельный пункт про обучение на твоём окружении и коде. Его тоже выключаем.</p><ol><li>Codex → слева внизу <b>аккаунт / Настройки</b>.</li><li>Найди пункт про обучение: в названии будет «обучение» или <span class="en">training</span>.</li><li>Выключи.</li></ol><p class="mute">Название пункта у тебя может немного отличаться: в разных версиях Codex его переименовывают.</p><div class="note"><b>Честно о том, что остаётся.</b> То, что агент читает, всё равно уходит на серверы OpenAI: без этого модель не может думать. Галочки запрещают учить на этом модели. Обработку они не отменяют.</div>',
+stage:'<div class="win">'+TB("Codex")+CXSIDE()+'<div class="menu hide" id="am" style="left:16px;top:350px"><div id="sett" style="font-weight:600">⚙ Настройки</div><div>Выйти</div></div><div class="main hide" id="sp"><div style="font-weight:700;font-size:20px;margin-bottom:6px">Настройки</div><div style="display:flex;gap:18px;color:var(--cx-mute);font-size:14px;margin-bottom:8px"><span>Общие</span><span>Модель</span><span id="dt" style="color:var(--cx-ink);font-weight:600">Данные</span><span>Интеграции</span></div><div class="row"><div>Разрешить обучение на моих окружениях<small>training on environments / code</small></div><div class="tg" id="t2"></div></div><div class="row"><div>Хранить историю задач<small>можно оставить</small></div><div class="tg"></div></div><div id="st2" class="hide" style="margin-top:14px"><span class="badge off">Обучение выключено ✓</span></div></div></div>',
+seq:[{click:"#avatar"},{show:"#am"},{click:"#sett"},{hide:"#am"},{show:"#sp"},{click:"#dt"},{wait:200},{click:"#t2"},{off:"#t2"},{show:"#st2"}]},
+
+/* 4 python */
+{cell:"4",title:"Проверь Python",
+panel:'<p>Пуск → набери <b>PowerShell</b> → открой. Вставь и нажми Enter:</p><div class="copy"><code>python --version</code><button type="button" data-copy="python --version">Скопировать</button></div><p>Ответ <b>Python 3.10</b> или новее: всё хорошо.</p><p>Если пишет, что не найдено: скачай Python с <b>python.org</b> и в установщике поставь галочку <span class="path">Add python.exe to PATH</span>. Потом открой PowerShell заново и проверь ещё раз.</p>',
+stage:'<div class="win">'+TB("Windows PowerShell")+'<div class="con" id="con"><span class="p">PS C:\\Users\\Sasha&gt; </span><span id="cmd"></span><div id="out" class="hide" style="color:#9fd3ad">Python 3.12.4</div><div id="p2" class="hide"><span class="p">PS C:\\Users\\Sasha&gt; </span>▍</div></div></div>',
+seq:[{move:"#cmd"},{type:["#cmd","python --version"]},{wait:300},{show:"#out"},{show:"#p2"}]},
+
+/* 5 project + trust */
+{cell:"5",title:"Открой папку в Codex и доверься ей",
+panel:'<p>В Codex слева <b>Проекты</b> → добавить проект → выбери <span class="path">C:\\codex-agent</span>.</p><p>Codex спросит, доверять ли папке. Отвечай <b>«Доверять»</b>.</p><div class="note">Это обязательно. Папке без доверия Codex не читает AGENTS.md, и все правила пропадут.</div><p class="mute">Кнопки у тебя могут называться чуть иначе. Смысл тот же: добавить папку и доверять ей.</p>',
+stage:'<div class="win">'+TB("Codex")+CXSIDE()+'<div class="menu hide" id="pm" style="left:200px;top:100px"><div id="addp" style="font-weight:600">＋ Добавить проект…</div><div>Недавние папки</div></div><div class="dlg hide" id="pick" style="left:300px;top:90px;width:420px"><div style="font-weight:600;margin-bottom:10px">Выбор папки</div><div class="field" id="pp"></div><div style="text-align:right;margin-top:14px"><span class="btn pri" id="sel">Выбрать папку</span></div></div><div class="dlg hide" id="trust" style="left:290px;top:150px;width:420px"><div style="font-weight:700;font-size:17px;margin-bottom:6px">Доверять этой папке?</div><div style="color:var(--cx-mute);font-size:13px;margin-bottom:18px">C:\\codex-agent · Codex будет читать AGENTS.md и запускать команды</div><div style="display:flex;justify-content:space-between"><span class="btn">Отмена</span><span class="btn pri" id="tr">Доверять</span></div></div><div class="hide" id="pd" style="position:absolute;left:20px;top:200px;color:#9fd3ad;font-size:14px">📁 codex-agent ✓</div></div>',
+seq:[{click:"#projects"},{show:"#pm"},{click:"#addp"},{hide:"#pm"},{show:"#pick"},{type:["#pp","C:\\codex-agent"]},{click:"#sel"},{hide:"#pick"},{show:"#trust"},{click:"#tr"},{hide:"#trust"},{show:"#pd"}]},
+
+/* 6 reasoning */
+{cell:"6",title:"Рассуждения: «Высокое»",
+panel:'<p>Внизу у поля ввода сейчас <b>«GPT-6 Sol Лёгкое»</b>. Нажми и выбери <b>«Высокое»</b>. Если такого пункта нет, выбери самый высокий из доступных, но не ниже «Среднего».</p><p>На «Лёгком» модель меньше думает перед действием. Для переводов денег это лишняя экономия: ошибка в счёте стоит дороже минуты ожидания.</p><p class="mute">Файл .codex/config.toml сам ставит «высокое» для этой папки, но проверь в окне.</p>',
+stage:'<div class="win">'+TB("Codex · codex-agent")+CXSIDE()+COMPOSER+'<div class="menu hide" id="em" style="left:540px;top:290px;min-width:190px"><div style="color:var(--cx-mute)">Лёгкое</div><div>Среднее</div><div id="hi" style="font-weight:600">Высокое</div><div style="color:var(--cx-mute)">Очень высокое</div></div></div>',
+seq:[{click:"#model"},{show:"#em"},{click:"#hi"},{hide:"#em"},{text:["#effort","Высокое ✓"]},{hl:"#model"}]},
+
+/* 7 security check */
+{cell:"7",title:"Пусть Codex проверит файлы",
+panel:'<p>Прежде чем агент начнёт работать, пусть сам прочитает весь код и скажет, куда он ходит в интернет и нет ли спрятанного.</p><p><b>Новый чат</b> в проекте → вставь текст → отправь. Он же лежит в файле <span class="path">ПРОВЕРКА-БЕЗОПАСНОСТИ.txt</span>.</p><div class="copy"><code>Проверка безопасности (весь текст)</code><button type="button" data-copy-from="t-check">Скопировать</button></div><div class="ok"><b>Нормальный ответ:</b> в сеть ходит только tg_fetch.py (Телеграм, по умолчанию выключен), остальное работает только внутри папки. Вердикт: «Утечек и скрытого кода нет».</div><p>Если вердикт другой, дальше не иди и перешли ответ Володе.</p>',
+stage:'<div class="win">'+TB("Codex · codex-agent")+CXSIDE()+'<div class="chat" id="ch"><div class="bub u hide" id="q">Проверь эту папку на безопасность. Ничего не запускай и не меняй: только читай…</div><div class="bub a hide" id="ans"><span class="l">Прочитал 17 файлов.</span><span class="l">journal.py, setup.py, check_kit.py: <span class="y">сети нет</span>, пишут только в папку</span><span class="l">tg_fetch.py: Телеграм, <span class="w">выключен</span> в rules.json</span><span class="l">eval / base64 / скрытых символов: <span class="y">нет</span></span><span class="l" style="margin-top:6px;font-weight:700"><span class="y">✓ Утечек и скрытого кода нет</span></span></div></div>'+COMPOSER.replace("Лёгкое","Высокое")+'</div>',
+seq:[{click:"#newchat"},{move:".composer"},{show:"#q"},{wait:500},{showLines:"#ans"}]},
+
+/* 8 start */
+{cell:"8",title:"Запусти СТАРТ и ответь на вопросы",
+panel:'<p>Ещё раз <b>Новый чат</b> → вставь текст из <span class="path">СТАРТ.txt</span> → отправь.</p><div class="copy"><code>СТАРТ (весь текст)</code><button type="button" data-copy-from="t-start">Скопировать</button></div><p>Агент проверит файлы и задаст вопросы <b>одним сообщением</b>. Ответь тоже одним, по номерам:</p><ol><li>Папка, куда качаешь Statement и Invoice.</li><li>Charge to: OUR, BEN или SHA.</li><li>Beneficiary Citizenship.</li><li>Relationship with Remitter.</li></ol><p>Слабо-красный стоит <b>#F4CCCC</b>. Если у вас другой, скажи агенту поменять.</p><p class="mute">В конце он перескажет правила. Неправильно пересказал: поправь сразу.</p>',
+stage:'<div class="win">'+TB("Codex · codex-agent")+CXSIDE()+'<div class="chat"><div class="bub u hide" id="q">Это первый запуск проекта…</div><div class="bub a hide" id="a1"><span class="l"><span class="y">✓</span> Комплект цел · <span class="y">✓</span> Журнал цел</span><span class="l" style="margin-top:6px">Ответь одним сообщением:</span><span class="l">1. Папка с документами?</span><span class="l">2. Charge to: OUR / BEN / SHA?</span><span class="l">3. Beneficiary Citizenship?</span><span class="l">4. Relationship with Remitter?</span></div><div class="bub u hide" id="u2">1. C:\\Заявки  2. SHA  3. Non Citizen  4. Non-Affiliated</div><div class="bub a hide" id="a2"><span class="l"><span class="y">✓ Записал 4 ответа в rules.json и журнал. Все настройки заполнены.</span></span></div></div>'+COMPOSER.replace("Лёгкое","Высокое")+'</div>',
+seq:[{move:".composer"},{show:"#q"},{showLines:"#a1"},{wait:400},{show:"#u2"},{wait:500},{showLines:"#a2"}]},
+
+/* 9 pin */
+{cell:"9",title:"Задай PIN для отката",
+panel:'<p>В папке <span class="path">C:\\codex-agent</span> двойной клик по <span class="path">ПИН.cmd</span>. Придумай PIN от 6 цифр, введи два раза. Цифры при вводе не видны, так и задумано.</p><div class="note"><b>PIN не пиши в чат Codex.</b> Пока агент его не знает, он может только дописывать журнал. Откатить, изменить или удалить запись не может.</div>',
+stage:'<div class="win light">'+TB("C:\\codex-agent")+'<div class="side"><div class="it">⬇ Загрузки</div><div class="it on">📁 codex-agent</div></div><div class="files"><div class="fi"><div class="ic dir"></div>tools</div><div class="fi"><div class="ic md">MD</div>AGENTS.md</div><div class="fi"><div class="ic txt">TXT</div>СТАРТ.txt</div><div class="fi"><div class="ic txt">TXT</div>ПРОВЕРКА-…</div><div class="fi"><div class="ic cmd">CMD</div>Журнал.cmd</div><div class="fi"><div class="ic cmd">CMD</div>Откат.cmd</div><div class="fi" id="pin"><div class="ic cmd">CMD</div>ПИН.cmd</div></div><div class="win hide" id="cw" style="left:120px;top:120px;right:60px;bottom:30px;border-radius:8px;overflow:hidden;box-shadow:0 30px 60px rgba(0,0,0,.4)">'+TB("ПИН.cmd")+'<div class="con"><div>Новый PIN (не говори его агенту): <span id="p1"></span></div><div class="hide" id="l2">Ещё раз: <span id="p2"></span></div><div class="hide y" id="l3">PIN сохранён.</div></div></div></div>',
+seq:[{click:"#pin"},{click:"#pin"},{show:"#cw"},{type:["#p1","••••••"]},{show:"#l2"},{type:["#p2","••••••"]},{show:"#l3"}]},
+
+/* 10 work */
+{cell:"10",title:"Работай фразами",
+panel:'<p>Документы качаешь, как раньше, в свою папку. Агенту пишешь обычными словами:</p><div class="copy"><code>Занеси заявки 1040–1045</code><button type="button" data-copy="Занеси заявки 1040–1045">Скопировать</button></div><div class="copy"><code>Нажал Submit. Проверь статусы и отметь в таблице</code><button type="button" data-copy="Нажал Submit. Проверь статусы и отметь в таблице">Скопировать</button></div><div class="copy"><code>Докачай свифты за сегодня и выложи</code><button type="button" data-copy="Докачай свифты за сегодня и выложи">Скопировать</button></div><p><b>Агент проверяет себя сам:</b> после каждого действия перечитывает ячейку, перед Submit сверяет поля «9 из 9», в конце пачки запускает аудит программой. <b>Submit всегда жмёшь ты.</b></p><p><b>После пачки начинай новый чат.</b> Агент сам скажет. Новый чат продолжит по журналу. Увидел «Контекст автоматически сжат»: ничего не делай, правила подставятся заново.</p>',
+stage:'<div class="win">'+TB("Codex · codex-agent")+CXSIDE()+'<div class="chat" style="right:300px"><div class="bub u hide" id="q">Занеси заявки 1040–1045</div><div class="bub a hide" id="a1"><span class="l">1040: сверка <span class="y">✓</span></span><span class="l">1040: самопроверка формы <span class="y">9 из 9 ✓</span></span><span class="l"><span class="w">1040: готова к Submit, жми сам</span></span></div><div class="bub u hide" id="u2">Нажал Submit</div><div class="bub a hide" id="a2"><span class="l">Статус Success → зелёный, перечитал <span class="y">✓</span></span><span class="l"><span class="y">Аудит: нарушений нет</span></span></div></div><div class="sheet" style="right:16px;top:70px;width:270px"><div class="rw" style="grid-template-columns:52px 1fr"><div>A</div><div>USD</div></div><div class="rw" style="grid-template-columns:52px 1fr"><div>1040</div><div id="c1">5 200,00</div></div><div class="rw" style="grid-template-columns:52px 1fr"><div>1041</div><div>67 320,00</div></div></div>'+COMPOSER.replace("Лёгкое","Высокое")+'</div>',
+seq:[{move:".composer"},{show:"#q"},{showLines:"#a1"},{wait:500},{show:"#u2"},{wait:400},{showLines:"#a2"},{bg:["#c1","#d9ead3"]},{hl:"#c1"}]},
+
+/* 11 journal + rollback */
+{cell:"11",title:"Журнал и откат",
+panel:'<p><span class="path">Журнал.cmd</span>: двойной клик, и в браузере откроется всё, что делал агент. По дням и заявкам: где, что было, что стало, ✓ или ✗ самопроверки.</p><p><b>Агент ошибся?</b> Он сам пишет «ОШИБКА», останавливается и называет номер записи. Откатываешь только ты:</p><ol><li>Двойной клик по <span class="path">Откат.cmd</span>.</li><li>Номер записи, например <span class="path">2026-10-20-010</span>.</li><li>Окно покажет, что вернуть. Вернёшь руками в таблице или банке.</li><li>Enter, причина, PIN.</li></ol><div class="note">Перевод, по которому уже нажат Submit, откатом не отменяется. Это решается в банке.</div>',
+stage:'<div class="win" style="background:#f6f5f2;color:#1d1d1b">'+TB("Журнал агента")+'<div style="position:absolute;left:24px;right:24px;top:56px;background:#fff;border:1px solid #e3e1db;border-radius:10px;padding:14px 16px;font-size:14px"><div style="font-weight:700;font-size:16px;margin-bottom:8px">MT103</div><div style="display:grid;grid-template-columns:120px 90px 1fr;gap:8px;padding:6px 0"><span style="font:12px Consolas;color:#76746e">…-010</span><span class="badge">внесено</span><span>Жёлтый: A1092<br><span id="x" style="color:#b83232;font-weight:600">✗ на месте голубой</span></span></div><div style="display:grid;grid-template-columns:120px 90px 1fr;gap:8px;padding:6px 0;color:#b83232;font-weight:600"><span style="font:12px Consolas;color:#76746e">…-011</span><span class="badge" style="background:#5f6b7a">отметка</span><span>ОШИБКА: самопроверка не сошлась</span></div><div class="hide" id="rb" style="display:grid;grid-template-columns:120px 90px 1fr;gap:8px;padding:6px 0 6px 18px;border-left:3px solid #e3e1db;margin-left:12px"><span style="font:12px Consolas;color:#76746e">…-012</span><span class="badge" style="background:#5b4bb7">откат · Саша</span><span>вернул «без заливки»</span></div><div class="hide" id="fx" style="display:grid;grid-template-columns:120px 90px 1fr;gap:8px;padding:6px 0 6px 18px;border-left:3px solid #e3e1db;margin-left:12px"><span style="font:12px Consolas;color:#76746e">…-013</span><span class="badge">повторно</span><span>Жёлтый: A1092 <span style="color:#2f7d4f;font-weight:600">✓ проверил</span></span></div></div><div class="win hide" id="cw" style="left:300px;top:250px;right:20px;bottom:16px;border-radius:8px;overflow:hidden;box-shadow:0 30px 60px rgba(0,0,0,.4)">'+TB("Откат.cmd")+'<div class="con" style="font-size:13px"><div>Номер записи: <span id="n"></span></div><div class="hide" id="r2">Верни руками: «без заливки» → Enter</div><div class="hide" id="r3">PIN: ••••••  <span class="y">Записано</span></div></div></div></div>',
+seq:[{hl:"#x"},{wait:700},{show:"#cw"},{type:["#n","2026-10-20-010"]},{show:"#r2"},{wait:600},{show:"#r3"},{wait:400},{hide:"#cw"},{showGrid:"#rb"},{wait:600},{showGrid:"#fx"}]},
+
+/* 12 automation */
+{cell:"12",title:"Проверь «Виртуальный офис»",
+panel:'<p>У тебя есть задача, которая срабатывает каждые 10 минут. Если она запускается не в проекте codex-agent, она не видит правил, журнала и запретов.</p><p>Открой её настройки и выбери папку <span class="path">C:\\codex-agent</span>. Если папку поменять нельзя, создай задачу заново внутри проекта.</p>',
+stage:'<div class="win">'+TB("Codex")+CXSIDE('<div class="it m" style="margin-top:16px;font-size:13px">Запланировано</div><div class="it" id="vo">◷ Виртуальный офис</div>')+'<div class="main hide" id="vp"><div style="font-weight:700;font-size:20px;margin-bottom:4px">Виртуальный офис</div><div style="color:var(--cx-mute);font-size:14px;margin-bottom:16px">Каждые 10 минут</div><div style="font-size:13px;color:var(--cx-mute);margin-bottom:6px">Папка проекта</div><div class="field" id="vf" style="width:380px">C:\\Users\\Sasha\\Documents</div><div id="vok" class="hide" style="margin-top:14px"><span class="badge">Папка: codex-agent ✓</span></div></div></div>',
+seq:[{click:"#vo"},{show:"#vp"},{click:"#vf"},{clear:"#vf"},{type:["#vf","C:\\codex-agent"]},{show:"#vok"}]},
+
+/* 13 final */
+{final:true,cell:"✓",
+panel:'<h2>Готово. Агент работает по правилам</h2><ul><li><b>Submit</b> всегда жмёшь ты.</li><li><b>Откат</b> только ты, через Откат.cmd и PIN.</li><li><b>После пачки</b> начинай новый чат.</li><li><b>Журнал</b>: Журнал.cmd.</li></ul><details><summary>Потом: агент сам забирает документы из Телеги</summary><div><p>В комплекте есть tools/tg_fetch.py. Он качает Statement и Invoice по номерам из рабочей группы в твою папку. Квоту Codex не тратит, работает от твоего аккаунта, только читает. По умолчанию выключен. Захочешь включить, напиши Володе, настроим вместе за 5 минут.</p></div></details><p class="mute">Застрял на каком-то шаге: пиши Володе, номер шага в таблице сверху.</p>',
+stage:'<div class="win" style="background:#eef1f4"><div class="sheet" style="left:50%;top:50%;transform:translate(-50%,-50%);width:360px" id="fs"></div></div>',
+seq:[{fill:"#fs"}]}
+];
+
+var stage=document.getElementById("stage"), wrap=document.getElementById("wrap"), panel=document.getElementById("panel");
+var cells=document.getElementById("cells"), count=document.getElementById("count");
+var nextBtn=document.getElementById("next"), nextLabel=document.getElementById("nextLabel"), backBtn=document.getElementById("back");
+var KEY="codex-agent-v3", idx=0, done={}, token=0;
+var REDUCED=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+try{var s=JSON.parse(localStorage.getItem(KEY)||"{}");idx=s.idx||0;done=s.done||{};}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify({idx:idx,done:done}));}catch(e){}}
+
+STEPS.forEach(function(st,i){
+  if(st.intro) return;
+  var b=document.createElement("button");
+  b.type="button";b.className="cell";b.innerHTML="<span>"+st.cell+"</span>";
+  b.setAttribute("aria-label",st.final?"Готово":"Шаг "+st.cell+": "+st.title);
+  b.addEventListener("click",function(){go(i);});
+  cells.appendChild(b);
+  st.btn=b;
+});
+
+function fit(){var sc=wrap.clientWidth/800;stage.style.transform="scale("+sc+")";wrap.style.height=(500*sc)+"px";}
+window.addEventListener("resize",fit);
+
+function wait(ms){var t=token;return new Promise(function(r,j){setTimeout(function(){t===token?r():j("x");},REDUCED?0:ms);});}
+function q(sel){return stage.querySelector(sel);}
+function pos(el){var s=stage.getBoundingClientRect(),r=el.getBoundingClientRect(),sc=s.width/800;return{x:(r.left-s.left+Math.min(r.width/2,60))/sc,y:(r.top-s.top+r.height/2)/sc};}
+function moveTo(el){var c=q("#cur");if(!c||!el)return wait(0);var p=pos(el);c.style.transform="translate("+(p.x-4)+"px,"+(p.y-3)+"px)";return wait(950);}
+function ripple(el){var p=pos(el),d=document.createElement("div");d.className="ripple";d.style.left=p.x+"px";d.style.top=p.y+"px";stage.appendChild(d);setTimeout(function(){d.remove();},700);}
+function hl(el){stage.querySelectorAll(".hl").forEach(function(x){x.classList.remove("hl");});if(el)el.classList.add("hl");}
+function typeInto(el,text){var i=0;el.textContent="";return new Promise(function(res,rej){var t=token;(function tick(){if(t!==token)return rej("x");el.textContent=text.slice(0,++i);if(i>=text.length)return res();setTimeout(tick,REDUCED?0:55);})();});}
+
+async function play(seq){
+  for(var k=0;k<seq.length;k++){
+    var s=seq[k];
+    if(s.wait!==undefined){await wait(s.wait);continue;}
+    if(s.move){await moveTo(q(s.move));continue;}
+    if(s.click){var el=q(s.click);await moveTo(el);hl(el);ripple(el);await wait(350);continue;}
+    if(s.show){var e1=q(s.show);e1.classList.remove("hide");e1.classList.add("fade-in");await wait(250);continue;}
+    if(s.showGrid){var g=q(s.showGrid);g.classList.remove("hide");g.style.display="grid";g.classList.add("fade-in");await wait(250);continue;}
+    if(s.hide){q(s.hide).classList.add("hide");continue;}
+    if(s.type){var te=q(s.type[0]);await moveTo(te);hl(te);await typeInto(te,s.type[1]);await wait(250);continue;}
+    if(s.clear){q(s.clear).textContent="";continue;}
+    if(s.text){q(s.text[0]).textContent=s.text[1];await wait(200);continue;}
+    if(s.off){q(s.off).classList.add("off");await wait(450);continue;}
+    if(s.hl){hl(q(s.hl));await moveTo(q(s.hl));continue;}
+    if(s.bg){q(s.bg[0]).style.backgroundColor=s.bg[1];await wait(450);continue;}
+    if(s.showN){var kids=q(s.showN[0]).children;kids[s.showN[1]].classList.remove("hide");kids[s.showN[1]].classList.add("fade-in");await wait(300);continue;}
+    if(s.showLines){var box=q(s.showLines);var ls=box.querySelectorAll(".l");ls.forEach(function(l){l.style.visibility="hidden";});box.classList.remove("hide");for(var n=0;n<ls.length;n++){ls[n].style.visibility="visible";ls[n].classList.add("fade-in");await wait(420);}continue;}
+    if(s.fill){var fs=q(s.fill),h='<div class="rw" style="grid-template-columns:52px 1fr"><div>№</div><div>Шаг</div></div>';STEPS.forEach(function(st){if(st.intro||st.final)return;h+='<div class="rw" style="grid-template-columns:52px 1fr"><div>'+st.cell+'</div><div>'+st.title+'</div></div>';});fs.innerHTML=h;var rows=fs.querySelectorAll(".rw");for(var m=1;m<rows.length;m++){rows[m].querySelectorAll("div").forEach(function(d){d.style.backgroundColor="#d9ead3";});await wait(110);}continue;}
   }
+}
 
-  document.querySelectorAll(".copy button").forEach(function(b){
-    b.addEventListener("click", function(){
-      var text = b.parentNode.querySelector("pre").textContent;
-      var ok = function(){ b.textContent = "Скопировано"; setTimeout(function(){ b.textContent = "Скопировать"; }, 1600); };
-      if (navigator.clipboard && window.isSecureContext) {
-        navigator.clipboard.writeText(text).then(ok, fallback);
-      } else { fallback(); }
-      function fallback(){
-        var t = document.createElement("textarea");
-        t.value = text; document.body.appendChild(t); t.select();
-        try { document.execCommand("copy"); ok(); } catch (e) {}
-        document.body.removeChild(t);
-      }
+
+var VOICE=/*VOICE*/{"0": [{"who": "negan", "t": "Саша, сладкий. Это Ниган. Твой агент косячит, потому что ты, тупой ослища, кормишь его правилами прямо в чате. Сейчас починим.", "f": "audio/01.mp3"}, {"who": "botya", "t": "А я Ботя. Буду показывать, куда тыкать. Листай вправо или жми «Дальше». Даже ты справишься.", "f": "audio/02.mp3"}], "1": [{"who": "botya", "t": "Архив из Телеги. Правой кнопкой → «Извлечь всё» → C:\\codex-agent. Не на рабочий стол, Саша, блядь, не на рабочий стол.", "f": "audio/03.mp3"}], "2": [{"who": "botya", "t": "Теперь галочка, ради которой всё затевалось. Настройки → Управление данными → «Улучшать модель для всех». Выключай нахер. Твои суммы и счета никого учить не должны.", "f": "audio/04.mp3"}, {"who": "negan", "t": "Вот это правильно. Своё не раздаём.", "f": "audio/05.mp3"}], "3": [{"who": "botya", "t": "Вторая галочка в самом Codex. Ищи слово «обучение». Нашёл — выключай. Не нашёл — ищи лучше, ослище.", "f": "audio/06.mp3"}], "4": [{"who": "botya", "t": "PowerShell. Вставляешь команду, жмёшь Enter. Вылезла тройка с цифрами — живём. Ругается — ставь Python и не забудь галочку про PATH.", "f": "audio/07.mp3"}], "5": [{"who": "botya", "t": "Codex → Проекты → добавить папку. Спросит, доверять ли. Доверяй. Без доверия он правила не прочитает, и всё пойдёт по пизде.", "f": "audio/08.mp3"}], "6": [{"who": "negan", "t": "Режим «Лёгкое». На деньгах. Саша. Ты серьёзно? Ставь «Высокое». Пусть думает, ему за это платят.", "f": "audio/09.mp3"}], "7": [{"who": "botya", "t": "Мне на слово не верь. Пусть Codex сам перечитает каждый файл и скажет, куда код ходит. Правильный ответ: утечек нет.", "f": "audio/10.mp3"}, {"who": "negan", "t": "Доверяй, но проверяй. А лучше просто проверяй.", "f": "audio/11.mp3"}], "8": [{"who": "botya", "t": "Вставляешь СТАРТ. Он задаст четыре вопроса одним сообщением. Отвечаешь тоже одним, по номерам. Не романом, Саш.", "f": "audio/12.mp3"}], "9": [{"who": "botya", "t": "Твой PIN-код — это твоя Люсиль. Агенту не показывай никогда. Без него он только дописывает, откатить ни хрена не может.", "f": "audio/13.mp3"}, {"who": "negan", "t": "Люсиль кому попало не дают.", "f": "audio/14.mp3"}], "10": [{"who": "botya", "t": "Дальше просто говоришь: «Занеси заявки». Он сверит, сам себя проверит, доведёт до Submit. А Submit жмёшь ты. Своей рукой. Как взрослый.", "f": "audio/15.mp3"}, {"who": "negan", "t": "И после каждой пачки — новый чат. Это не обсуждается.", "f": "audio/16.mp3"}], "11": [{"who": "botya", "t": "Накосячил агент — он сам напишет «ОШИБКА» и встанет как вкопанный. Откатываешь ты: Откат.cmd и PIN. Всё записано, ничего не спрячешь.", "f": "audio/17.mp3"}], "12": [{"who": "botya", "t": "И проверь «Виртуальный офис». Крутится не в этой папке — значит, про правила ни хрена не знает.", "f": "audio/18.mp3"}], "13": [{"who": "negan", "t": "Всё, Саша. Агент работает как часы, а ты, тупой ослища, пьёшь кофе. Застрял — пиши мне.", "f": "audio/19.mp3"}, {"who": "botya", "t": "И мне пиши. Я хоть посмеюсь.", "f": "audio/20.mp3"}]}/*END*/;
+var audio=new Audio(); audio.preload="auto";
+var say=document.getElementById("say"), sayImg=document.getElementById("sayImg"), sayWho=document.getElementById("sayWho"), sayText=document.getElementById("sayText");
+var sndBtn=document.getElementById("snd"), soundOn=true, speakTok=0;
+try{soundOn=localStorage.getItem("codex-agent-snd")!=="off";}catch(e){}
+function paintSnd(){sndBtn.classList.toggle("off",!soundOn);sndBtn.setAttribute("aria-pressed",soundOn?"true":"false");sndBtn.textContent=soundOn?"🔊 Звук":"🔇 Без звука";}
+paintSnd();
+sndBtn.addEventListener("click",function(){soundOn=!soundOn;try{localStorage.setItem("codex-agent-snd",soundOn?"on":"off");}catch(e){}paintSnd();if(!soundOn){audio.pause();say.classList.remove("talk");}else speak(idx);});
+function showLine(l){sayImg.src=l.who==="negan"?"img/negan.webp":"img/botya.webp";sayWho.textContent=l.who==="negan"?"Ниган":"Ботя";sayText.textContent=l.t;}
+function speak(i){
+  var lines=VOICE[i]||[], t=++speakTok;
+  audio.pause();say.classList.remove("talk");
+  if(!lines.length){say.style.display="none";return;}
+  say.style.display="";
+  var k=0;
+  (function next(){
+    if(t!==speakTok||k>=lines.length){if(t===speakTok)say.classList.remove("talk");return;}
+    var l=lines[k++];showLine(l);
+    if(!soundOn){if(k<lines.length)setTimeout(next,Math.max(2200,l.t.length*55));return;}
+    audio.src=l.f;say.classList.add("talk");
+    audio.onended=function(){if(t===speakTok){say.classList.remove("talk");setTimeout(next,280);}};
+    var pr=audio.play();if(pr&&pr.catch)pr.catch(function(){say.classList.remove("talk");});
+  })();
+}
+say.addEventListener("click",function(){speak(idx);});
+function render(anim){
+  var st=STEPS[idx];token++;
+  document.body.classList.toggle("is-intro",!!st.intro);
+  var html=(st.intro||st.final?"":'<div class="kicker"><b>'+st.cell+'</b> из 12</div><h2>'+st.title+'</h2>')+st.panel;
+  var apply=function(){panel.innerHTML=html;panel.classList.remove("out");bindCopy();};
+  if(anim&&!REDUCED){panel.classList.add("out");setTimeout(apply,220);}else apply();
+  stage.innerHTML=st.stage+CURSOR;fit();
+  STEPS.forEach(function(s,i){if(!s.btn)return;s.btn.classList.toggle("done",!!done[i]);s.btn.classList.toggle("now",i===idx);});
+  var n=Object.keys(done).filter(function(k){return done[k]&&!STEPS[k].intro&&!STEPS[k].final;}).length;
+  count.textContent=st.final?"Готово":(n+" из 12");
+  backBtn.disabled=idx===0;
+  nextLabel.textContent=st.intro?"Начать":st.final?"Сначала":"Сделано, дальше";
+  play(st.seq||[]).catch(function(){});
+  speak(idx);
+  save();
+}
+function go(i){if(i<0||i>=STEPS.length)return;idx=i;render(true);window.scrollTo({top:0,behavior:REDUCED?"auto":"smooth"});}
+nextBtn.classList.add("pulse");
+nextBtn.addEventListener("click",function(){
+  nextBtn.classList.remove("pulse");
+  if(STEPS[idx].final){done={};go(0);return;}
+  if(!STEPS[idx].intro){done[idx]=true;nextBtn.classList.add("flash");setTimeout(function(){nextBtn.classList.remove("flash");},450);}
+  go(idx+1);
+});
+backBtn.addEventListener("click",function(){go(idx-1);});
+document.getElementById("replay").addEventListener("click",function(){render(false);});
+document.addEventListener("keydown",function(e){if(e.target.closest&&e.target.closest("input,textarea"))return;if(e.key==="ArrowRight")nextBtn.click();if(e.key==="ArrowLeft")go(idx-1);});
+var sx=null,sy=null;
+document.addEventListener("touchstart",function(e){sx=e.touches[0].clientX;sy=e.touches[0].clientY;},{passive:true});
+document.addEventListener("touchend",function(e){if(sx===null)return;var dx=e.changedTouches[0].clientX-sx,dy=e.changedTouches[0].clientY-sy;if(Math.abs(dx)>70&&Math.abs(dx)>Math.abs(dy)*1.5){dx<0?nextBtn.click():go(idx-1);}sx=null;},{passive:true});
+
+function bindCopy(){
+  panel.querySelectorAll("[data-copy],[data-copy-from]").forEach(function(b){
+    b.addEventListener("click",function(){
+      var text=b.dataset.copy||document.getElementById(b.dataset.copyFrom).textContent;
+      var ok=function(){var old=b.textContent;b.textContent="Скопировано ✓";b.classList.add("done");setTimeout(function(){b.textContent=old;b.classList.remove("done");},1600);};
+      var fb=function(){var t=document.createElement("textarea");t.value=text;t.style.position="fixed";t.style.opacity="0";document.body.appendChild(t);t.select();try{document.execCommand("copy");ok();}catch(e){}t.remove();};
+      if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(text).then(ok,fb);}else fb();
     });
   });
-
-  document.getElementById("reset").addEventListener("click", function(){ done = {}; save(); render(); window.scrollTo(0, 0); });
-  render();
+}
+if(document.fonts&&document.fonts.ready){document.fonts.ready.then(function(){render(false);});}else render(false);
 })();
 </script>
 </body>
