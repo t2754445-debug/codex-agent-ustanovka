@@ -1,0 +1,481 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Агент в Codex: установка по шагам</title>
+<meta name="description" content="Пошагово: куда положить файлы, что нажать в Codex, как работает журнал и откат.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Агент в Codex: установка по шагам">
+<meta property="og:description" content="Правила больше не теряются при сжатии чата. Каждое действие агента в журнале, откат только у тебя.">
+<meta property="og:image" content="https://t2754445-debug.github.io/codex-agent-ustanovka/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#eef1f4; --sheet:#ffffff; --ink:#15233b; --ink-2:#4a5870; --grid:#d5dbe3;
+  --done:#d9ead3; --done-ink:#2d6a3e; --mark:#ffef5c; --skip:#f4cccc; --skip-ink:#9b2c2c;
+  --codex:#1b1c1e; --codex-2:#2a2b2e; --codex-ink:#e6e6e6;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#11161e; --sheet:#18202b; --ink:#e4e9f0; --ink-2:#9aa7b8; --grid:#2a3442;
+  --done:#203a28; --done-ink:#9fd3ad; --skip:#3f2326; --skip-ink:#f0a5a5;
+}}
+:root[data-theme="dark"]{
+  --paper:#11161e; --sheet:#18202b; --ink:#e4e9f0; --ink-2:#9aa7b8; --grid:#2a3442;
+  --done:#203a28; --done-ink:#9fd3ad; --skip:#3f2326; --skip-ink:#f0a5a5;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.55 "Golos Text",system-ui,sans-serif}
+a{color:inherit}
+.wrap{max-width:1080px;margin:0 auto;padding:0 16px}
+
+/* hero */
+header{padding:56px 0 40px}
+h1{font-size:clamp(34px,6vw,58px);line-height:1.05;font-weight:800;letter-spacing:-.02em;margin:0 0 18px;max-width:14ch}
+.lead{font-size:19px;color:var(--ink-2);max-width:60ch;margin:0 0 30px}
+.legend{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border:1px solid var(--grid);background:var(--sheet);max-width:760px}
+.legend div{padding:14px 16px;border-left:1px solid var(--grid);font-size:15px}
+.legend div:first-child{border-left:0}
+.legend b{display:block;font-size:16px;margin-bottom:2px}
+.legend .g{background:var(--done)} .legend .r{background:var(--skip)} .legend .y{background:var(--mark);color:#15233b}
+.legend .y b,.legend .y{color:#15233b}
+.why{margin-top:28px;max-width:62ch;font-size:16px;color:var(--ink-2)}
+.why strong{color:var(--ink)}
+
+/* progress */
+.bar{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--paper) 92%,transparent);backdrop-filter:blur(6px);border-bottom:1px solid var(--grid)}
+.bar .wrap{display:flex;align-items:center;gap:14px;padding-top:10px;padding-bottom:10px}
+.cells{display:flex;gap:3px;flex:1}
+.cells a{flex:1;height:14px;border:1px solid var(--grid);background:var(--sheet);display:block}
+.cells a.done{background:var(--done);border-color:var(--done-ink)}
+.cells a.now{background:var(--mark);border-color:#c9b400}
+.count{font-weight:600;font-size:15px;white-space:nowrap}
+
+/* steps as sheet rows */
+ol.steps{list-style:none;margin:28px 0 0;padding:0;border-top:1px solid var(--grid)}
+.step{display:grid;grid-template-columns:64px 1fr;border-bottom:1px solid var(--grid);background:var(--sheet);scroll-margin-top:60px}
+.num{border-right:1px solid var(--grid);display:flex;justify-content:center;padding-top:22px;font-weight:700;font-size:18px;color:var(--ink-2);transition:background-color var(--t,.2s) ease}
+.step.done .num{background:var(--done);color:var(--done-ink)}
+.step.now .num{background:var(--mark);color:#15233b}
+.body{padding:20px 22px 22px;min-width:0}
+.step h2{font-size:22px;line-height:1.25;margin:0 0 8px;font-weight:700}
+.step.done h2{color:var(--done-ink)}
+.step p{margin:0 0 12px;max-width:66ch}
+.step ul{margin:0 0 12px;padding-left:20px;max-width:66ch}
+.step li{margin-bottom:4px}
+.opt{font-size:14px;font-weight:600;color:var(--ink-2);margin-left:8px}
+.fn{font-weight:600;background:color-mix(in srgb,var(--mark) 45%,transparent);padding:0 4px;border-radius:3px;white-space:nowrap}
+.step.done .detail{display:none}
+.step.done .done-note{display:block}
+.done-note{display:none;color:var(--done-ink);font-size:15px;margin:0}
+
+.copy{position:relative;margin:10px 0 14px;max-width:760px}
+.copy pre{margin:0;background:var(--codex);color:var(--codex-ink);padding:14px 16px;padding-right:118px;font:14px/1.5 Consolas,"Cascadia Mono",monospace;white-space:pre-wrap;word-break:break-word;border-radius:6px}
+.copy button{position:absolute;top:8px;right:8px}
+button{font:inherit;font-size:14px;font-weight:600;border:1px solid var(--grid);background:var(--sheet);color:var(--ink);padding:7px 12px;border-radius:5px;cursor:pointer}
+.copy button{background:#34363a;color:#fff;border-color:#4a4c50}
+button:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid #3b6fd8;outline-offset:2px}
+.mark-done{margin-top:6px;background:var(--done);border-color:var(--done-ink);color:var(--done-ink)}
+.step.done .mark-done{background:var(--sheet);color:var(--ink-2);border-color:var(--grid)}
+
+figure{margin:12px 0 16px;max-width:760px}
+figure svg,figure img{display:block;width:100%;height:auto;border:1px solid var(--grid);border-radius:6px}
+figcaption{font-size:14px;color:var(--ink-2);margin-top:6px}
+
+details{border:1px solid var(--grid);border-radius:6px;margin:8px 0;max-width:760px;background:var(--paper)}
+summary{cursor:pointer;padding:10px 14px;font-weight:600}
+details > div{padding:0 14px 12px;font-size:15px}
+.files{display:grid;grid-template-columns:minmax(150px,auto) 1fr;border:1px solid var(--grid);max-width:760px;font-size:15px}
+.files div{padding:8px 12px;border-top:1px solid var(--grid)}
+.files div:nth-child(-n+2){border-top:0}
+.files div:nth-child(odd){font-weight:600;background:var(--paper);border-right:1px solid var(--grid);word-break:break-all}
+.warn{border-left:4px solid var(--skip-ink);background:var(--skip);padding:10px 14px;max-width:66ch;margin:10px 0 14px;font-size:15px;color:var(--ink)}
+
+footer{padding:40px 0 60px;color:var(--ink-2);font-size:15px}
+.reset{margin-left:8px}
+
+@media (max-width:640px){
+  body{font-size:16px}
+  header{padding:36px 0 28px}
+  .legend{grid-template-columns:1fr}
+  .legend div{border-left:0;border-top:1px solid var(--grid)}
+  .legend div:first-child{border-top:0}
+  .step{grid-template-columns:40px 1fr}
+  .num{font-size:15px;padding-top:20px}
+  .body{padding:16px 14px 18px}
+  .step h2{font-size:19px}
+  .files{grid-template-columns:1fr}
+  .files div:nth-child(odd){border-right:0}
+  .files div:nth-child(even){border-top:0}
+  .copy pre{padding-right:16px;padding-top:46px}
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+<header>
+  <h1>Агент в Codex: установка по шагам</h1>
+  <p class="lead">Архив с файлами придёт в Телеграм. Здесь написано, куда его положить, что нажать в Codex и как потом работать. Отмечай шаги кнопкой «Сделано»: строка зальётся зелёным, как занесённая заявка в таблице.</p>
+  <div class="legend" aria-label="Цвета, которые использует агент">
+    <div class="g"><b>Бледно-зелёный</b>заявка занесена, статус в банке проверен</div>
+    <div class="r"><b>Слабо-красный</b>заявка пропущена, причина в столбце G</div>
+    <div class="y"><b>Жёлтый</b>только столбец A: MT103 скачан</div>
+  </div>
+  <p class="why"><strong>Что меняется.</strong> Сейчас правила живут в переписке, и когда Codex пишет «Контекст автоматически сжат», часть правил пропадает. Агент начинает додумывать: например, берёт цвет с соседних строк. После установки правила лежат в файлах, и Codex подставляет их заново после каждого сжатия. Каждое действие агента записывается в журнал, откатывать может только ты.</p>
+</header>
+</div>
+
+<nav class="bar" aria-label="Прогресс">
+  <div class="wrap">
+    <div class="cells" id="cells"></div>
+    <span class="count" id="count">0 из 0</span>
+  </div>
+</nav>
+
+<main class="wrap">
+<ol class="steps" id="steps">
+
+<li class="step" id="s1"><div class="num">1</div><div class="body">
+  <h2>Скачай архив из Телеграма</h2>
+  <div class="detail">
+    <p>Файл <span class="fn">codex-agent.zip</span>. Внутри:</p>
+    <div class="files">
+      <div>AGENTS.md</div><div>Правила и твоё ТЗ дословно. Codex читает его сам в каждом чате и после каждого сжатия.</div>
+      <div>rules.json</div><div>Все цвета, коды, порядок валют, столбцы таблицы. Агент берёт значения только отсюда.</div>
+      <div>СТАРТ.txt</div><div>Текст для первого чата. Вставишь на шаге 6.</div>
+      <div>Журнал.cmd</div><div>Двойной клик: открыть журнал действий агента в браузере.</div>
+      <div>Откат.cmd</div><div>Двойной клик: отметить откат. Работает только с твоим PIN.</div>
+      <div>ПИН.cmd</div><div>Двойной клик: задать PIN для отката.</div>
+      <div>.agents/skills/</div><div>Три инструкции для агента: занесение заявки, MT103, журнал.</div>
+      <div>.codex/config.toml</div><div>Ставит уровень рассуждений «высокий» для этой папки.</div>
+      <div>tools/</div><div>Скрипты журнала, настроек, проверки файлов и (по желанию) скачивания из Телеграма.</div>
+    </div>
+    <p style="margin-top:12px">Файлы, имя которых начинается с точки (<span class="fn">.agents</span>, <span class="fn">.codex</span>), Проводник может не показывать. Они на месте.</p>
+  </div>
+  <p class="done-note">Архив скачан.</p>
+  <button class="mark-done" type="button">Сделано</button>
+</div></li>
+
+<li class="step" id="s2"><div class="num">2</div><div class="body">
+  <h2>Проверь, что есть Python</h2>
+  <div class="detail">
+    <p>Нажми Пуск, набери <span class="fn">PowerShell</span>, открой и вставь:</p>
+    <div class="copy"><pre>python --version</pre><button type="button">Скопировать</button></div>
+    <p>Ответ вида <b>Python 3.12.x</b> (3.10 или новее) означает, что всё в порядке. Если пишет «не найдено», поставь Python с python.org и при установке поставь галочку <span class="fn">Add python.exe to PATH</span>. Потом закрой и снова открой PowerShell и проверь ещё раз.</p>
+  </div>
+  <p class="done-note">Python есть.</p>
+  <button class="mark-done" type="button">Сделано</button>
+</div></li>
+
+<li class="step" id="s3"><div class="num">3</div><div class="body">
+  <h2>Распакуй в C:\codex-agent</h2>
+  <div class="detail">
+    <p>Правой кнопкой по архиву → «Извлечь всё» → путь <span class="fn">C:\codex-agent</span>. Не на рабочий стол и не в «Загрузки»: так путь короткий и не меняется.</p>
+    <p>Открой папку. Сверху должны лежать <span class="fn">AGENTS.md</span> и <span class="fn">СТАРТ.txt</span>, а не ещё одна папка codex-agent внутри. Если вложилась вторая папка, перенеси её содержимое на уровень выше.</p>
+    <figure>
+      <svg viewBox="0 0 760 250" role="img" aria-label="Папка C:\codex-agent в Проводнике">
+        <rect width="760" height="250" fill="#ffffff"/>
+        <rect width="760" height="40" fill="#f3f3f3"/>
+        <text x="16" y="26" font-family="Segoe UI,sans-serif" font-size="15" fill="#222">📁  Этот компьютер  ›  Локальный диск (C:)  ›  codex-agent</text>
+        <g font-family="Segoe UI,sans-serif" font-size="15" fill="#222">
+          <text x="24" y="72">📁 .agents</text><text x="24" y="98">📁 .codex</text><text x="24" y="124">📁 tools</text>
+          <text x="24" y="150">📄 AGENTS.md</text><text x="24" y="176">📄 rules.json</text><text x="24" y="202">📄 СТАРТ.txt</text>
+          <rect x="380" y="56" width="190" height="26" fill="#ffef5c"/><text x="390" y="74">⚙ Журнал.cmd</text>
+          <rect x="380" y="86" width="190" height="26" fill="#ffef5c"/><text x="390" y="104">⚙ Откат.cmd</text>
+          <rect x="380" y="116" width="190" height="26" fill="#ffef5c"/><text x="390" y="134">⚙ ПИН.cmd</text>
+          <text x="590" y="74" fill="#666" font-size="13">журнал</text>
+          <text x="590" y="104" fill="#666" font-size="13">только ты</text>
+          <text x="590" y="134" fill="#666" font-size="13">только ты</text>
+        </g>
+      </svg>
+      <figcaption>Жёлтым отмечено то, что запускаешь ты сам двойным кликом. Остальное для агента.</figcaption>
+    </figure>
+  </div>
+  <p class="done-note">Файлы лежат в C:\codex-agent.</p>
+  <button class="mark-done" type="button">Сделано</button>
+</div></li>
+
+<li class="step" id="s4"><div class="num">4</div><div class="body">
+  <h2>Открой папку в Codex как проект</h2>
+  <div class="detail">
+    <p>В Codex слева раздел <b>Проекты</b> → добавить проект или открыть папку → выбери <span class="fn">C:\codex-agent</span>.</p>
+    <p>Если Codex спросит, доверять ли папке, отвечай <b>«Доверять»</b>. Это обязательно: для папки без доверия Codex не читает AGENTS.md, и все правила пропадут.</p>
+    <figure>
+      <svg viewBox="0 0 760 300" role="img" aria-label="Окно Codex: раздел Проекты и вопрос о доверии папке">
+        <rect width="760" height="300" fill="#1b1c1e"/>
+        <rect width="230" height="300" fill="#202124"/>
+        <g font-family="Segoe UI,sans-serif" font-size="15" fill="#e6e6e6">
+          <text x="20" y="36" font-weight="700" font-size="17">Codex</text>
+          <text x="20" y="76">✎  Новый чат</text>
+          <rect x="10" y="98" width="210" height="34" rx="6" fill="none" stroke="#ffef5c" stroke-width="3"/>
+          <text x="20" y="121">Проекты  ›</text>
+          <text x="20" y="160" fill="#9a9a9a">Недавние  ›</text>
+          <rect x="300" y="70" width="400" height="160" rx="10" fill="#2a2b2e" stroke="#3a3b3f"/>
+          <text x="324" y="108" font-weight="600">Доверять этой папке?</text>
+          <text x="324" y="136" fill="#b5b5b5" font-size="14">C:\codex-agent</text>
+          <rect x="324" y="168" width="120" height="38" rx="6" fill="#3a3b3f"/>
+          <text x="355" y="192" fill="#cfcfcf">Отмена</text>
+          <rect x="560" y="168" width="120" height="38" rx="6" fill="#e6e6e6" stroke="#ffef5c" stroke-width="3"/>
+          <text x="582" y="192" fill="#1b1c1e" font-weight="600">Доверять</text>
+        </g>
+      </svg>
+      <figcaption>Названия кнопок у тебя могут немного отличаться. Смысл тот же: добавить папку и разрешить ей доверие.</figcaption>
+    </figure>
+  </div>
+  <p class="done-note">Проект открыт, папке доверяем.</p>
+  <button class="mark-done" type="button">Сделано</button>
+</div></li>
+
+<li class="step" id="s5"><div class="num">5</div><div class="body">
+  <h2>Подними уровень рассуждений</h2>
+  <div class="detail">
+    <p>Внизу у поля ввода сейчас стоит <b>«GPT-6 Sol Лёгкое»</b>. Нажми на него и выбери <b>«Высокое»</b>. Если такого пункта нет, выбери самый высокий из доступных, но не ниже «Среднего».</p>
+    <p>На «Лёгком» модель меньше думает перед действием. Для переводов денег это лишняя экономия: ошибка в счёте стоит дороже минуты ожидания. Файл <span class="fn">.codex/config.toml</span> ставит «высокий» уровень для этой папки сам, но лучше проверить и в окне.</p>
+    <figure>
+      <svg viewBox="0 0 760 230" role="img" aria-label="Поле ввода Codex и выбор уровня рассуждений">
+        <rect width="760" height="230" fill="#1b1c1e"/>
+        <rect x="20" y="150" width="720" height="60" rx="16" fill="#2a2b2e" stroke="#3a3b3f"/>
+        <g font-family="Segoe UI,sans-serif" font-size="15" fill="#e6e6e6">
+          <text x="44" y="186" font-size="20">+</text>
+          <text x="80" y="186" fill="#e8a23a">ⓘ Полный доступ</text>
+          <rect x="468" y="160" width="200" height="38" rx="8" fill="none" stroke="#ffef5c" stroke-width="3"/>
+          <text x="480" y="185">GPT-6 Sol  <tspan fill="#9a9a9a">Лёгкое ⌄</tspan></text>
+          <rect x="470" y="14" width="200" height="128" rx="10" fill="#2a2b2e" stroke="#3a3b3f"/>
+          <text x="490" y="46" fill="#9a9a9a">Лёгкое</text>
+          <text x="490" y="78" fill="#cfcfcf">Среднее</text>
+          <rect x="478" y="92" width="184" height="32" rx="6" fill="#ffef5c"/>
+          <text x="490" y="114" fill="#1b1c1e" font-weight="600">Высокое  ✓</text>
+        </g>
+      </svg>
+    </figure>
+  </div>
+  <p class="done-note">Уровень «Высокое».</p>
+  <button class="mark-done" type="button">Сделано</button>
+</div></li>
+
+<li class="step" id="s6"><div class="num">6</div><div class="body">
+  <h2>Новый чат в проекте: вставь СТАРТ.txt</h2>
+  <div class="detail">
+    <p>Нажми <b>«Новый чат»</b> внутри проекта codex-agent. Вставь текст ниже целиком (он же лежит в <span class="fn">СТАРТ.txt</span>) и отправь.</p>
+    <div class="copy"><pre id="start">Это первый запуск проекта. Все файлы уже лежат в этой папке, их писал не ты: ничего в них не переписывай, не улучшай и не создавай заново.
+
+Сделай по шагам и после каждого покажи вывод:
+
+1. python --version  (нужен 3.10 или новее; если Python нет — скажи мне и остановись)
+2. python tools/check_kit.py
+3. python tools/journal.py resume
+4. python tools/setup.py missing
+   Задай мне ВСЕ вопросы из вывода ОДНИМ сообщением, пронумеруй. Дождись ответа.
+   Каждый ответ запиши: python tools/setup.py set &lt;поле&gt; "&lt;значение&gt;"
+   Потом снова python tools/setup.py missing — должно быть «Все настройки заполнены».
+5. python tools/journal.py note --cat "Система" --what "Комплект установлен, настройки заполнены"
+6. Перескажи мне коротко своими словами: 8 пунктов ТЗ из AGENTS.md, все запреты, какие команды журнала тебе доступны и что ты делаешь, если ошибся.
+
+В банк, таблицу и Телеграм пока не заходи. Дальше работаю фразами вроде «Занеси заявки 1040–1045» и «Докачай свифты за сегодня».</pre><button type="button">Скопировать</button></div>
+    <p>Если на шаге «check_kit» агент пишет «Комплект не совпадает», значит, какой-то файл испорчен. Распакуй архив заново.</p>
+  </div>
+  <p class="done-note">Агент проверил файлы.</p>
+  <button class="mark-done" type="button">Сделано</button>
+</div></li>
+
+<li class="step" id="s7"><div class="num">7</div><div class="body">
+  <h2>Ответь на вопросы агента одним сообщением</h2>
+  <div class="detail">
+    <p>Агент спросит всё, чего нет в ТЗ, одним списком. Ответь так же одним сообщением, по номерам. Он запишет ответы в <span class="fn">rules.json</span>, и каждая запись попадёт в журнал. Потом он больше не переспрашивает.</p>
+    <ul>
+      <li><b>Папка документов</b>: куда ты скачиваешь Statement и Invoice из рабочей группы. Например <span class="fn">C:\Users\…\Downloads\Заявки</span>.</li>
+      <li><b>Charge to</b>: OUR, BEN или SHA.</li>
+      <li><b>Beneficiary Citizenship</b>: Citizen или Non Citizen.</li>
+      <li><b>Relationship with Remitter</b>: Overseas Subsidiary, Non-Affiliated, Shareholder или Group.</li>
+    </ul>
+    <p>Отдельно проверь в <span class="fn">rules.json</span> слабо-красный цвет. В ТЗ кода нет, стоит <b>#F4CCCC</b>. Если у вас другой, скажи агенту: «Запиши colors.skipped = #……».</p>
+    <p>В конце агент перескажет правила своими словами. Если что-то пересказал неправильно, поправь сразу, пока он не начал работать.</p>
+  </div>
+  <p class="done-note">Настройки заполнены.</p>
+  <button class="mark-done" type="button">Сделано</button>
+</div></li>
+
+<li class="step" id="s8"><div class="num">8</div><div class="body">
+  <h2>Задай PIN для отката</h2>
+  <div class="detail">
+    <p>В папке <span class="fn">C:\codex-agent</span> двойной клик по <span class="fn">ПИН.cmd</span>. Введи PIN из 6 и более цифр, повтори. Символы при вводе не видны, так и задумано.</p>
+    <div class="warn">PIN не пиши в чат Codex и никуда не сохраняй рядом с папкой. Пока агент его не знает, он не может ни откатить, ни изменить, ни удалить запись журнала. Только дописать новую.</div>
+  </div>
+  <p class="done-note">PIN задан.</p>
+  <button class="mark-done" type="button">Сделано</button>
+</div></li>
+
+<li class="step" id="s9"><div class="num">9</div><div class="body">
+  <h2>Работа каждый день</h2>
+  <div class="detail">
+    <p>Документы скачиваешь, как раньше, в ту папку, которую назвал агенту. Дальше пишешь агенту обычными словами. Примеры:</p>
+    <div class="copy"><pre>Занеси заявки 1040–1045</pre><button type="button">Скопировать</button></div>
+    <div class="copy"><pre>Нажал Submit по всем. Проверь статусы в банке и отметь в таблице</pre><button type="button">Скопировать</button></div>
+    <div class="copy"><pre>Докачай свифты за сегодня и выложи</pre><button type="button">Скопировать</button></div>
+    <p>Как идёт пачка:</p>
+    <ul>
+      <li>агент сверяет документы, собирает формы до экрана Submit и останавливается;</li>
+      <li>ты смотришь и нажимаешь Submit сам, потом пишешь «нажал»;</li>
+      <li>агент проверяет фактический статус и только после этого красит ячейку.</li>
+    </ul>
+    <p><b>После каждой пачки начинай новый чат.</b> Агент сам скажет: «Пачка готова, начните новый чат». Новый чат продолжит по журналу с того места, где остановился прошлый, ничего объяснять заново не надо.</p>
+  </div>
+  <p class="done-note">Понятно, как работать.</p>
+  <button class="mark-done" type="button">Сделано</button>
+</div></li>
+
+<li class="step" id="s10"><div class="num">10</div><div class="body">
+  <h2>Если появилось «Контекст автоматически сжат»</h2>
+  <div class="detail">
+    <p>Ничего делать не нужно. Правила из AGENTS.md Codex подставляет заново, а агент по правилам запускает проверку журнала и продолжает со следующего шага.</p>
+    <p>Если кажется, что он поплыл (повторяет сделанное, путает цвета), напиши:</p>
+    <div class="copy"><pre>Стоп. Запусти python tools/journal.py resume, перечитай AGENTS.md и нужный SKILL.md и скажи, на чём остановились</pre><button type="button">Скопировать</button></div>
+  </div>
+  <p class="done-note">Понятно.</p>
+  <button class="mark-done" type="button">Сделано</button>
+</div></li>
+
+<li class="step" id="s11"><div class="num">11</div><div class="body">
+  <h2>Журнал: что делал агент</h2>
+  <div class="detail">
+    <p>Двойной клик по <span class="fn">Журнал.cmd</span>. Откроется страница: дни, внутри по заявкам, под каждой строкой всё, что потом происходило с тем же местом. У каждой записи указано, где (таблица и ячейка, форма в банке, тема SWIFT), что было до и что стало.</p>
+    <figure>
+      <img src="journal.png" alt="Пример журнала: заявка 1040 занесена, 1041 пропущена с причиной, у MT103 ошибка агента и откат, сделанный пользователем" loading="lazy" width="900" height="1092">
+      <figcaption>Пример. Агент покрасил A1092 голубым, сам записал «ОШИБКА» и остановился. Откат сделал пользователь, и после этого агент покрасил правильно.</figcaption>
+    </figure>
+    <ul>
+      <li>Агент может только <b>дописывать</b>. Старые строки он не правит и не удаляет.</li>
+      <li>Если кто-то всё же изменит или сотрёт строку в файле журнала, сверху страницы появится «ЖУРНАЛ ПОВРЕЖДЁН», и агент остановит работу.</li>
+      <li>Файлы журнала лежат в <span class="fn">C:\codex-agent\journal</span>, по одному на день. Прошлые дни закрываются «только чтение».</li>
+    </ul>
+  </div>
+  <p class="done-note">Журнал открывается.</p>
+  <button class="mark-done" type="button">Сделано</button>
+</div></li>
+
+<li class="step" id="s12"><div class="num">12</div><div class="body">
+  <h2>Откат: только ты и только руками</h2>
+  <div class="detail">
+    <p>Если агент ошибся, он не исправляет сам. Он пишет в журнал «ОШИБКА», останавливается и сообщает тебе номер записи.</p>
+    <ul>
+      <li>Двойной клик по <span class="fn">Откат.cmd</span>.</li>
+      <li>Введи номер записи из журнала, например <span class="fn">2026-10-20-007</span>. Окно покажет, где это и какое значение было до.</li>
+      <li>Верни это значение руками в таблице или в банке и проверь.</li>
+      <li>Нажми Enter, коротко напиши причину, введи PIN.</li>
+    </ul>
+    <p>В журнале под исходной строкой появится «откат · Саша». Агент такую запись сделать не может.</p>
+    <div class="warn">Перевод, по которому уже нажат Submit, откатом не отменяется. Это решается в банке.</div>
+  </div>
+  <p class="done-note">Понятно, как откатить.</p>
+  <button class="mark-done" type="button">Сделано</button>
+</div></li>
+
+<li class="step" id="s13"><div class="num">13</div><div class="body">
+  <h2>Проверь автоматизацию «Виртуальный офис»</h2>
+  <div class="detail">
+    <p>У тебя есть запланированная задача, которая срабатывает каждые 10 минут. Если она запускается не в проекте codex-agent, то правил, журнала и запретов не видит. Открой её настройки и выбери папку <span class="fn">C:\codex-agent</span>. Если поменять папку нельзя, пересоздай задачу внутри проекта.</p>
+  </div>
+  <p class="done-note">Автоматизация в правильной папке.</p>
+  <button class="mark-done" type="button">Сделано</button>
+</div></li>
+
+<li class="step" id="s14"><div class="num">14</div><div class="body">
+  <h2>Потом, по желанию: агент сам забирает документы из группы <span class="opt">необязательно</span></h2>
+  <div class="detail">
+    <p>Сейчас документы качаешь ты, чтобы не тратить квоту Codex. В комплекте есть скрипт <span class="fn">tools/tg_fetch.py</span>: он скачивает Statement и Invoice по номерам заявок из рабочей группы в твою папку. Квоту модели он не тратит, потому что файлы качает сам скрипт, а не агент через браузер. Работает от твоего аккаунта и только читает: ничего не пишет и не отправляет.</p>
+    <details>
+      <summary>Как включить</summary>
+      <div>
+        <ul>
+          <li>На <b>my.telegram.org</b> → API development tools получи api_id и api_hash.</li>
+          <li>Создай в <span class="fn">C:\codex-agent</span> файл <span class="fn">.env</span> с двумя строками: <span class="fn">TG_API_ID=…</span> и <span class="fn">TG_API_HASH=…</span>. Впиши сам, в чат не отправляй.</li>
+          <li>В PowerShell в этой папке: <span class="fn">pip install telethon</span>, затем <span class="fn">python tools\tg_fetch.py login --phone +…</span>, потом <span class="fn">--code</span> из Телеграма.</li>
+          <li>Скажи агенту: «Включи Телеграм-блок, группа такая-то». Он запишет <span class="fn">telegram.enabled</span> и <span class="fn">telegram.group</span> через настройки.</li>
+          <li>Дальше фраза «Забери документы 1040–1045 из группы».</li>
+        </ul>
+      </div>
+    </details>
+  </div>
+  <p class="done-note">Решено.</p>
+  <button class="mark-done" type="button">Сделано</button>
+</div></li>
+
+</ol>
+</main>
+
+<footer class="wrap">
+  Отметки шагов хранятся только в этом браузере. <button class="reset" type="button" id="reset">Снять все отметки</button>
+</footer>
+
+<script>
+(function(){
+  var KEY = "codex-agent-steps";
+  var steps = Array.prototype.slice.call(document.querySelectorAll(".step"));
+  var cells = document.getElementById("cells");
+  var count = document.getElementById("count");
+  var done = {};
+  try { done = JSON.parse(localStorage.getItem(KEY) || "{}") || {}; } catch (e) { done = {}; }
+
+  steps.forEach(function(s){
+    var a = document.createElement("a");
+    a.href = "#" + s.id;
+    a.setAttribute("aria-label", "Шаг " + s.querySelector(".num").textContent);
+    cells.appendChild(a);
+    s.querySelector(".mark-done").addEventListener("click", function(){
+      done[s.id] = !done[s.id];
+      save(); render();
+      if (done[s.id]) {
+        var next = steps.filter(function(x){ return !done[x.id]; })[0];
+        if (next) next.scrollIntoView({block: "start"});
+      }
+    });
+  });
+
+  function save(){ try { localStorage.setItem(KEY, JSON.stringify(done)); } catch (e) {} }
+
+  function render(){
+    var links = cells.children, n = 0, nowSet = false;
+    steps.forEach(function(s, i){
+      var isDone = !!done[s.id];
+      var isNow = !isDone && !nowSet;
+      if (isNow) nowSet = true;
+      if (isDone) n++;
+      s.classList.toggle("done", isDone);
+      s.classList.toggle("now", isNow);
+      links[i].className = isDone ? "done" : (isNow ? "now" : "");
+      s.querySelector(".mark-done").textContent = isDone ? "Вернуть шаг" : "Сделано";
+    });
+    count.textContent = n === steps.length ? "Готово" : (n + " из " + steps.length);
+  }
+
+  document.querySelectorAll(".copy button").forEach(function(b){
+    b.addEventListener("click", function(){
+      var text = b.parentNode.querySelector("pre").textContent;
+      var ok = function(){ b.textContent = "Скопировано"; setTimeout(function(){ b.textContent = "Скопировать"; }, 1600); };
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(ok, fallback);
+      } else { fallback(); }
+      function fallback(){
+        var t = document.createElement("textarea");
+        t.value = text; document.body.appendChild(t); t.select();
+        try { document.execCommand("copy"); ok(); } catch (e) {}
+        document.body.removeChild(t);
+      }
+    });
+  });
+
+  document.getElementById("reset").addEventListener("click", function(){ done = {}; save(); render(); window.scrollTo(0, 0); });
+  render();
+})();
+</script>
+</body>
+</html>
