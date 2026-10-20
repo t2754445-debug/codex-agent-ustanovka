@@ -375,8 +375,10 @@ var cells=document.getElementById("cells"), count=document.getElementById("count
 var nextBtn=document.getElementById("next"), nextLabel=document.getElementById("nextLabel"), backBtn=document.getElementById("back");
 var KEY="codex-agent-v3", idx=0, done={}, token=0;
 var REDUCED=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-try{var s=JSON.parse(localStorage.getItem(KEY)||"{}");idx=s.idx||0;done=s.done||{};}catch(e){}
-function save(){try{localStorage.setItem(KEY,JSON.stringify({idx:idx,done:done}));}catch(e){}}
+var resume=0;
+try{var s=JSON.parse(localStorage.getItem(KEY)||"{}");resume=s.idx||0;done=s.done||{};}catch(e){}
+if(STEPS[resume]&&(STEPS[resume].intro||STEPS[resume].final))resume=0;
+function save(){if(!STEPS[idx].intro)resume=STEPS[idx].final?0:idx;try{localStorage.setItem(KEY,JSON.stringify({idx:resume,done:done}));}catch(e){}}
 
 STEPS.forEach(function(st,i){
   if(st.intro) return;
@@ -457,7 +459,7 @@ function render(anim){
   var n=Object.keys(done).filter(function(k){return done[k]&&!STEPS[k].intro&&!STEPS[k].final;}).length;
   count.textContent=st.final?"Готово":(n+" из 12");
   backBtn.disabled=idx===0;
-  nextLabel.textContent=st.intro?"Начать":st.final?"Сначала":"Сделано, дальше";
+  nextLabel.textContent=st.intro?(resume>1?"Продолжить с шага "+STEPS[resume].cell:"Начать"):st.final?"Сначала":"Сделано, дальше";
   play(st.seq||[]).catch(function(){});
   speak(idx);
   save();
@@ -468,6 +470,7 @@ nextBtn.addEventListener("click",function(){
   nextBtn.classList.remove("pulse");
   if(STEPS[idx].final){done={};go(0);return;}
   if(!STEPS[idx].intro){done[idx]=true;nextBtn.classList.add("flash");setTimeout(function(){nextBtn.classList.remove("flash");},450);}
+  if(STEPS[idx].intro&&resume>1){go(resume);return;}
   go(idx+1);
 });
 backBtn.addEventListener("click",function(){go(idx-1);});
