@@ -205,6 +205,19 @@ details>div{padding:0 14px 10px;font-size:15px}
 .hand{display:inline-block;animation:swipe 1.6s ease-in-out infinite}
 @keyframes swipe{0%,100%{transform:translateX(10px)}50%{transform:translateX(-14px)}}
 @media (max-width:900px){.say img{width:72px}.bubble{font-size:15px}body.is-intro .stage-col{display:none}h1{font-size:32px}.how{margin-top:0}}
+
+/* заставка: загрузка голосов и запуск звука */
+.splash{position:fixed;inset:0;z-index:100;background:radial-gradient(700px 500px at 50% 30%,rgba(129,32,34,.45),transparent 70%),#151311;display:flex;align-items:center;justify-content:center;padding:24px;transition:opacity .45s var(--ease)}
+.splash.gone{opacity:0;pointer-events:none}
+.sp-in{text-align:center;max-width:420px;width:100%}
+.sp-in img{width:150px;filter:drop-shadow(0 18px 20px rgba(0,0,0,.7));animation:bob .6s ease-in-out infinite alternate;transform-origin:50% 100%}
+.sp-t{font-family:"Dela Gothic One",sans-serif;font-size:26px;line-height:1.15;margin:16px 0 6px}
+.sp-s{color:var(--ink-2);font-size:15px;margin:0 0 18px;min-height:22px}
+.sp-bar{display:flex;gap:4px;margin:0 auto 22px;max-width:320px}
+.sp-bar i{flex:1;height:12px;border:1.5px solid var(--grid);border-radius:3px;background:var(--sheet);transition:background .2s}
+.sp-bar i.on{background:var(--green);border-color:var(--green-ink)}
+.sp-go{border:0;background:var(--blood);color:#fff;font-weight:800;font-size:19px;padding:16px 26px;border-radius:12px;width:100%;max-width:320px;animation:gopulse 1.6s ease-in-out infinite}
+.sp-mute{display:block;margin:14px auto 0;background:none;border:0;color:var(--ink-2);font-size:14px;text-decoration:underline}
 @media (prefers-reduced-motion:reduce){
   *{animation:none!important;transition:none!important}
 }
@@ -212,6 +225,16 @@ details>div{padding:0 14px 10px;font-size:15px}
 </head>
 <body>
 
+<div class="splash" id="splash" role="dialog" aria-label="Запуск">
+  <div class="sp-in">
+    <img src="img/botya.webp" alt="Ботя">
+    <div class="sp-t" id="spT">Ботя прогревает лампы…</div>
+    <p class="sp-s" id="spS">Загружаю голоса</p>
+    <div class="sp-bar" id="spBar"></div>
+    <button class="sp-go hide" id="spGo" type="button">▶ Поехали, со звуком</button>
+    <button class="sp-mute hide" id="spMute" type="button">без звука, я в метро</button>
+  </div>
+</div>
 <div class="top"><div class="top-in">
   <div class="brand">Агент в Codex</div>
   <div class="cells" id="cells"></div>
@@ -424,7 +447,7 @@ async function play(seq){
 
 
 var VOICE=/*VOICE*/{"0": [{"who": "negan", "t": "Саша, моё заварное пирожное. Твой агент косячит, потому что ты кормишь его правилами прямо в чате. Сейчас починим.", "f": "audio/01.mp3?v=3"}, {"who": "botya", "t": "А я Ботя. Буду показывать, куда тыкать. Листай вправо или жми «Дальше». Даже ты справишься.", "f": "audio/02.mp3?v=3"}], "1": [{"who": "botya", "t": "Архив из Телеги. Правой кнопкой → «Извлечь всё» → C:\\codex-agent. Не на рабочий стол, Саша, блядь, не на рабочий стол.", "f": "audio/03.mp3?v=3"}], "2": [{"who": "botya", "t": "Теперь галочка, ради которой всё затевалось. Настройки → Управление данными → «Улучшать модель для всех». Выключай нахер. Твои суммы и счета никого учить не должны.", "f": "audio/04.mp3?v=3"}, {"who": "negan", "t": "Вот это правильно. Своё не раздаём.", "f": "audio/05.mp3?v=3"}], "3": [{"who": "botya", "t": "Вторая галочка в самом Codex. Ищи слово «обучение». Нашёл — выключай. Не нашёл — ищи лучше, плюшка.", "f": "audio/06.mp3?v=3"}], "4": [{"who": "botya", "t": "Python нет? Да и хрен с ним. Агент сам его поставит в первом чате. Твоя задача: нажать «Разрешить» и «Да». Справишься, булочка.", "f": "audio/07.mp3?v=3"}], "5": [{"who": "botya", "t": "Codex → Проекты → добавить папку. Спросит, доверять ли. Доверяй. Без доверия он правила не прочитает, и всё пойдёт по пизде.", "f": "audio/08.mp3?v=3"}], "6": [{"who": "negan", "t": "Режим «Лёгкое». На деньгах. Саша. Ты серьёзно? Ставь «Высокое». Пусть думает, ему за это платят.", "f": "audio/09.mp3?v=3"}], "7": [{"who": "botya", "t": "Мне на слово не верь. Пусть Codex сам перечитает каждый файл и скажет, куда код ходит. Правильный ответ: утечек нет.", "f": "audio/10.mp3?v=3"}, {"who": "negan", "t": "Доверяй, но проверяй. А лучше просто проверяй.", "f": "audio/11.mp3?v=3"}], "8": [{"who": "botya", "t": "Вставляешь СТАРТ. Он задаст четыре вопроса одним сообщением. Отвечаешь тоже одним, по номерам. Не романом, пироженка.", "f": "audio/12.mp3?v=3"}], "9": [{"who": "botya", "t": "Твой PIN-код — это твоя Люсиль. Агенту не показывай никогда. Без него он только дописывает, откатить ни хрена не может.", "f": "audio/13.mp3?v=3"}, {"who": "negan", "t": "Люсиль кому попало не дают.", "f": "audio/14.mp3?v=3"}], "10": [{"who": "botya", "t": "Дальше просто говоришь: «Занеси заявки». Он сверит, сам себя проверит, доведёт до Submit. А Submit жмёшь ты. Своей рукой. Как взрослый.", "f": "audio/15.mp3?v=3"}, {"who": "negan", "t": "И после каждой пачки — новый чат. Это не обсуждается.", "f": "audio/16.mp3?v=3"}], "11": [{"who": "botya", "t": "Накосячил агент — он сам напишет «ОШИБКА» и встанет как вкопанный. Откатываешь ты: Откат.cmd и PIN. Всё записано, ничего не спрячешь.", "f": "audio/17.mp3?v=3"}], "12": [{"who": "botya", "t": "И проверь «Виртуальный офис». Крутится не в этой папке — значит, про правила ни хрена не знает.", "f": "audio/18.mp3?v=3"}], "13": [{"who": "negan", "t": "Всё, Булочкин. Агент работает как часы, а ты пьёшь кофе с эклером. Застрял — пиши мне.", "f": "audio/19.mp3?v=3"}, {"who": "botya", "t": "И мне пиши. Я хоть посмеюсь.", "f": "audio/20.mp3?v=3"}]}/*END*/;
-var audio=new Audio(); audio.preload="auto";
+var audio=new Audio(); audio.preload="auto"; var spoken=false;
 var say=document.getElementById("say"), sayImg=document.getElementById("sayImg"), sayWho=document.getElementById("sayWho"), sayText=document.getElementById("sayText");
 var sndBtn=document.getElementById("snd"), soundOn=true, speakTok=0;
 try{soundOn=localStorage.getItem("codex-agent-snd")!=="off";}catch(e){}
@@ -434,6 +457,7 @@ sndBtn.addEventListener("click",function(){soundOn=!soundOn;try{localStorage.set
 function showLine(l){sayImg.src=l.who==="negan"?"img/negan.webp":"img/botya.webp";sayWho.textContent=l.who==="negan"?"Владимир":"Ботя";sayText.textContent=l.t;}
 function speak(i){
   var lines=VOICE[i]||[], t=++speakTok;
+  if(!spoken){say.style.display=lines.length?"":"none";if(lines.length)showLine(lines[0]);return;}
   audio.pause();say.classList.remove("talk");
   if(!lines.length){say.style.display="none";return;}
   say.style.display="";
@@ -447,7 +471,7 @@ function speak(i){
     var pr=audio.play();if(pr&&pr.catch)pr.catch(function(){say.classList.remove("talk");});
   })();
 }
-say.addEventListener("click",function(){speak(idx);});
+say.addEventListener("click",function(){spoken=true;speak(idx);});
 function render(anim){
   var st=STEPS[idx];token++;
   document.body.classList.toggle("is-intro",!!st.intro);
@@ -491,6 +515,41 @@ function bindCopy(){
   });
 }
 if(document.fonts&&document.fonts.ready){document.fonts.ready.then(function(){render(false);});}else render(false);
+// ---- заставка: грузим все голоса, потом пробуем заговорить сами ----
+(function(){
+  var sp=document.getElementById("splash"), bar=document.getElementById("spBar"), go=document.getElementById("spGo"),
+      mute=document.getElementById("spMute"), spT=document.getElementById("spT"), spS=document.getElementById("spS");
+  var urls=[];Object.keys(VOICE).forEach(function(k){VOICE[k].forEach(function(l){if(urls.indexOf(l.f)<0)urls.push(l.f);});});
+  for(var i=0;i<urls.length;i++){bar.appendChild(document.createElement("i"));}
+  var cells=bar.children, n=0;
+  function tick(){if(cells[n])cells[n].classList.add("on");n++;spS.textContent="Загружаю голоса: "+Math.min(n,urls.length)+" из "+urls.length;}
+  function one(u){return fetch(u,{cache:"force-cache"}).then(function(r){return r.blob();}).catch(function(){}).then(tick);}
+  var started=false;
+  function hide(){sp.classList.add("gone");setTimeout(function(){sp.style.display="none";},500);}
+  function start(withSound){
+    if(started)return;started=true;
+    soundOn=withSound;try{localStorage.setItem("codex-agent-snd",soundOn?"on":"off");}catch(e){}
+    paintSnd();hide();spoken=true;speak(idx);
+  }
+  function askTap(){
+    spT.textContent="Всё готово";spS.textContent="Браузер просит одно нажатие, чтобы включить звук";
+    go.classList.remove("hide");mute.classList.remove("hide");
+  }
+  go.addEventListener("click",function(){start(true);});
+  mute.addEventListener("click",function(){start(false);});
+  // любое первое касание страницы тоже включает звук
+  ["pointerdown","keydown","touchend"].forEach(function(ev){document.addEventListener(ev,function first(e){
+    if(started||e.target===mute)return;if(!go.classList.contains("hide")){start(true);}
+  },{once:false,capture:true});});
+  Promise.all(urls.map(one)).then(function(){
+    spS.textContent="Голоса загружены";
+    if(!soundOn){askTap();return;}
+    audio.src=urls[0];
+    var pr=audio.play();
+    if(pr&&pr.then){pr.then(function(){audio.pause();start(true);}).catch(askTap);}else askTap();
+  });
+})();
+
 })();
 </script>
 </body>
